@@ -52,10 +52,12 @@ export default function MapScreen() {
     let list = isEvents
       ? (active ? EVENTS.filter((e) => e.category === active) : EVENTS).map((e) => ({ ...e, _kind: 'event' }))
       : (active ? SPOTS.filter((s) => s.category === active) : SPOTS).map((s) => ({ ...s, _kind: 'spot' }));
-    const q = query.trim().toLowerCase();
+    // ignore punctuation so "baes" finds "Bae's Coffee"
+    const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+    const q = norm(query.trim());
     if (q) {
       list = list.filter((p) =>
-        [p.name, p.title, p.area, p.category].some((f) => f && f.toLowerCase().includes(q))
+        [p.name, p.title, p.area, p.category].some((f) => f && norm(f).includes(q))
       );
     }
     return list;
