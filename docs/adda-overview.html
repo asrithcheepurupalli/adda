@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Adda · Team Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon:#8A1C24;
+    --red:#BC2130;
+    --ink:#1C1815;
+    --cream:#FBF6EE;
+    --cream-2:#F3EADC;
+    --muted:#6B6259;
+    --line:#E4D9C7;
+    --dark:#120F0E;
+    --dark-2:#1B1615;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#fff;color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  @page{ size:A4; margin:0; }
+  .page{
+    position:relative;
+    width:210mm; height:297mm;
+    padding:20mm 18mm;
+    background:var(--cream);
+    overflow:hidden;
+    page-break-after:always;
+    display:flex; flex-direction:column;
+  }
+  .page:last-child{page-break-after:auto;}
+  .page::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(138,28,36,.045), transparent 55%),
+      radial-gradient(90% 70% at 0% 100%, rgba(138,28,36,.035), transparent 50%);
+  }
+  .content{position:relative; z-index:2; flex:1; display:flex; flex-direction:column;}
+
+  /* ---------- shared type ---------- */
+  .kicker{ font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.36em; text-transform:uppercase; color:var(--maroon); font-weight:600; }
+  h2.section{ font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.32em; text-transform:uppercase; color:var(--maroon); font-weight:700; margin-bottom:5mm; display:flex; align-items:center; gap:12px; }
+  h2.section::after{content:""; flex:1; height:1.5px; background:var(--line);}
+  h3.q{ font-size:26px; line-height:1.14; font-weight:800; letter-spacing:-.4px; margin-bottom:5mm; color:var(--ink); max-width:150mm;}
+  h3.q em{ font-style:normal; color:var(--maroon); }
+  p.lead{ font-size:14.5px; line-height:1.62; color:var(--ink); font-weight:400; max-width:162mm; }
+  p.lead + p.lead{margin-top:3mm;}
+  .muted{color:var(--muted);}
+  .brandfoot{position:absolute; bottom:11mm; left:18mm; font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); z-index:3;}
+  .brandfoot b{color:var(--maroon); font-weight:700;}
+  .pagenum{position:absolute; bottom:11mm; right:18mm; font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:.2em; color:var(--muted); z-index:3;}
+
+  /* ---------- COVER (dark / street) ---------- */
+  .cover-page{ background:var(--dark); }
+  .cover-page::before{
+    background:
+      radial-gradient(130% 90% at 100% 0%, rgba(188,33,48,.22), transparent 55%),
+      radial-gradient(90% 70% at 0% 100%, rgba(188,33,48,.10), transparent 55%);
+  }
+  .cover{ justify-content:space-between; height:100%; }
+  .cover-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .cover-top .kicker{color:var(--red);}
+  .studio{ font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:#8C8178; font-weight:500; text-align:right; line-height:1.5;}
+  .studio b{color:#F3ECE0; font-weight:700;}
+  .wordmark{
+    font-family:'Anton', sans-serif;
+    font-size:250px; line-height:.9;
+    color:var(--red);
+    letter-spacing:1px; text-transform:uppercase;
+    transform:skewX(-9deg);
+    text-shadow:7px 8px 0 rgba(0,0,0,.45);
+    margin:0 0 0 -6px;
+  }
+  .tagline{
+    font-family:'Oswald',sans-serif; font-weight:600;
+    font-size:38px; letter-spacing:.14em; text-transform:uppercase;
+    color:#F3ECE0; transform:skewX(-9deg);
+    margin:8mm 0 0 4mm;
+  }
+  .tagline .dot{color:var(--red);}
+  .cover-sub{ margin-top:10mm; max-width:152mm; font-size:17px; line-height:1.55; color:#E6DED2; font-weight:400;}
+  .cover-sub b{color:#F6EFE4; font-weight:600;}
+  .cover-foot{ display:flex; justify-content:space-between; align-items:flex-end; border-top:2px solid var(--red); padding-top:5mm; font-family:'Oswald',sans-serif; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:#8C8178;}
+  .pill{ display:inline-block; background:var(--red); color:#fff; font-family:'Oswald',sans-serif; font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; padding:7px 15px; border-radius:2px;}
+
+  /* ---------- cards ---------- */
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:6mm; margin-top:6mm;}
+  .card{ background:#fff; border:1px solid var(--line); border-top:3px solid var(--maroon); border-radius:4px; padding:6mm; }
+  .card .idx{ font-family:'Oswald',sans-serif; font-size:12px; font-weight:700; letter-spacing:.18em; color:var(--red); display:block; margin-bottom:8px;}
+  .card h4{font-size:15.5px; font-weight:800; margin-bottom:6px; letter-spacing:-.2px;}
+  .card p{font-size:12.5px; line-height:1.5; color:var(--muted);}
+
+  /* ---------- spec table ---------- */
+  table.spec{width:100%; border-collapse:collapse; margin-top:4mm; font-size:13px;}
+  table.spec tr{border-bottom:1px solid var(--line);}
+  table.spec td{padding:8px 6px; vertical-align:top;}
+  table.spec td.k{width:36mm; font-family:'Oswald',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--maroon); font-size:12px;}
+  table.spec td.v{color:var(--ink); line-height:1.45;}
+  .tags{display:flex; flex-wrap:wrap; gap:7px; margin-top:5mm;}
+  .tag{font-family:'Oswald',sans-serif; font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--maroon); background:var(--cream-2); border:1px solid var(--line); padding:6px 11px; border-radius:2px;}
+
+  /* ---------- steps ---------- */
+  .steps{margin-top:4mm;}
+  .step{ display:flex; gap:14px; padding:8px 0; border-bottom:1px solid var(--line); align-items:baseline;}
+  .step .n{ font-family:'Anton',sans-serif; color:var(--red); font-size:20px; width:28px; flex:none;}
+  .step .t{font-size:13.5px; line-height:1.45;}
+  .step .t b{font-weight:800;}
+
+  /* ---------- callout ---------- */
+  .callout{ background:var(--dark); color:#fff; border-radius:4px; padding:7mm 8mm; margin-top:6mm;}
+  .callout h4{font-family:'Oswald',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.1em; font-size:15px; margin-bottom:9px; color:var(--red);}
+  .callout p{font-size:13.5px; line-height:1.6; color:#E6DED2;}
+
+  /* ---------- reference ---------- */
+  .shot{ margin-top:5mm; border:1px solid var(--line); border-radius:6px; overflow:hidden; box-shadow:0 6px 22px rgba(28,24,21,.10);}
+  .shot img{ display:block; width:100%; height:auto;}
+  .shot-cap{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:9px; font-size:12px; color:var(--muted);}
+  .shot-cap a{ font-family:'Oswald',sans-serif; letter-spacing:.06em; color:var(--maroon); text-decoration:none; font-weight:600; border-bottom:1.5px solid var(--maroon); padding-bottom:1px;}
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:6mm; margin-top:6mm;}
+  .split h5{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--maroon); margin-bottom:8px;}
+  .split ul{list-style:none; }
+  .split li{font-size:12.5px; line-height:1.5; color:var(--ink); padding-left:14px; position:relative; margin-bottom:5px;}
+  .split li::before{content:""; position:absolute; left:0; top:8px; width:5px; height:5px; background:var(--red); border-radius:50%;}
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="page cover-page">
+  <div class="content cover">
+    <div class="cover-top">
+      <div class="kicker">Team Brief · Confidential</div>
+      <div class="studio">a <b>made. by ac</b> product<br>Vizag first</div>
+    </div>
+
+    <div>
+      <div class="wordmark">adda</div>
+      <div class="tagline">find your spots<span class="dot">.</span></div>
+    </div>
+
+    <p class="cover-sub">
+      The social map of your city. Turn on your location and Vizag comes alive with your friends' real recommendations, the best food, places and events, hanging right there on the map. <b>Everything worth doing, in one app people actually love opening.</b>
+    </p>
+
+    <div class="cover-foot">
+      <span class="pill">Vision &amp; v1 Spec</span>
+      <span>Prepared 01 July 2026 · Share within team only</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAGE 2 : THE IDEA ================= -->
+<section class="page">
+  <div class="content">
+    <h2 class="section">01 · The idea</h2>
+    <h3 class="q">One app for <em>everything happening around you</em>, made social.</h3>
+    <p class="lead">
+      Today, finding something good to do is scattered. Reviews live on one app, events on another, and your friends' real opinions live in group chats that scroll away. Adda pulls it into one beautiful place. You open it, the map lights up around you, and you instantly see where your friends eat, what they love, and what is on tonight.
+    </p>
+    <p class="lead">
+      The name carries it. An <b>adda</b> is your hangout, your go to spot, a word everyone in Vizag already uses. So the product needs no explanation. "Add it to my addas." "That is our adda." It is talkable by design, and that is how it spreads.
+    </p>
+
+    <div class="grid2">
+      <div class="card">
+        <span class="idx">01</span>
+        <h4>Alive, not a directory</h4>
+        <p>Friends' review cards hang on a live map, so the city looks full of real opinions instead of dead grey pins.</p>
+      </div>
+      <div class="card">
+        <span class="idx">02</span>
+        <h4>Ranked, not starred</h4>
+        <p>After a visit we ask, better or worse than the last one, and build your personal ranked list. Addictive, and far richer than five stars.</p>
+      </div>
+      <div class="card">
+        <span class="idx">03</span>
+        <h4>A profile you love</h4>
+        <p>My addas is your map, your ranked lists, your badges and streaks. Good enough that people open the app just to look at themselves.</p>
+      </div>
+      <div class="card">
+        <span class="idx">04</span>
+        <h4>Everything social, one app</h4>
+        <p>Food, places, events, friends and guides together. If someone wants something exciting to do, they come to us first.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <h4>The feeling we are chasing</h4>
+      <p>Premium and buttery like Apple Maps and Instagram, and addictive like the best learning apps. Polished enough to trust, playful enough to open every single day. That combination is exactly what the great social apps get right.</p>
+    </div>
+  </div>
+  <div class="brandfoot"><b>adda</b> · find your spots</div>
+  <div class="pagenum">02</div>
+</section>
+
+<!-- ================= PAGE 3 : THE REFERENCE ================= -->
+<section class="page">
+  <div class="content">
+    <h2 class="section">02 · The reference</h2>
+    <h3 class="q">This is the standard. <em>We build it for our city, all year.</em></h3>
+    <p class="lead">
+      Below is the interactive winter map of Brussels that inspired the look and feel. Notice the hand crafted map, the colourful category pins, the clean filter bar, and the rich cards for each place. It feels premium and alive. We are building this quality of experience for Vizag, made social, and running every day of the year rather than one season.
+    </p>
+
+    <div class="shot">
+      <img src="reference-map.png" alt="Reference: interactive city map" />
+    </div>
+    <div class="shot-cap">
+      <span>Reference · Plaisirs d'Hiver interactive city map, Brussels</span>
+      <a href="https://map.plaisirsdhiver.be">map.plaisirsdhiver.be</a>
+    </div>
+
+    <div class="split">
+      <div>
+        <h5>What we take</h5>
+        <ul>
+          <li>A beautiful, curated, hand crafted map</li>
+          <li>Colourful category pins you can read at a glance</li>
+          <li>Simple filters and search</li>
+          <li>Rich cards with photos for every place</li>
+        </ul>
+      </div>
+      <div>
+        <h5>What we add</h5>
+        <ul>
+          <li>Your friends and their real recommendations</li>
+          <li>Personal ranked lists instead of star ratings</li>
+          <li>A profile worth opening on its own</li>
+          <li>Events all year, not one festival</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="brandfoot"><b>adda</b> · find your spots</div>
+  <div class="pagenum">03</div>
+</section>
+
+<!-- ================= PAGE 4 : SPEC ================= -->
+<section class="page">
+  <div class="content">
+    <h2 class="section">03 · What we are building (v1)</h2>
+    <h3 class="q">The decisions, <em>already locked.</em></h3>
+    <table class="spec">
+      <tr><td class="k">Platform</td><td class="v">Native iOS and Android app (Expo, React Native). Real App Store and Play Store presence, native maps, push notifications.</td></tr>
+      <tr><td class="k">Hero focus</td><td class="v">Food and places, powered by your friends. The daily habit engine. Events layer on top.</td></tr>
+      <tr><td class="k">Core mechanic</td><td class="v">Ranked comparison. Better or worse than the last one, building a personal ranked list rather than star ratings.</td></tr>
+      <tr><td class="k">Signature look</td><td class="v">Friends' review cards floating on the live map. The city feels alive with your people's opinions.</td></tr>
+      <tr><td class="k">Social graph</td><td class="v">Real identity plus phone contacts to find people you know, and shareable usernames so anyone can be found and shared easily.</td></tr>
+      <tr><td class="k">Profile</td><td class="v">My addas. Your map, ranked lists, guides, badges and streaks. Levels up as you explore.</td></tr>
+      <tr><td class="k">Content</td><td class="v">Real base data pulled from Google Maps and trusted local sites, enriched carefully, then seeded with real reviews from local tastemakers. The map is full on day one.</td></tr>
+      <tr><td class="k">City</td><td class="v">Vizag first. Get one city truly loved, then expand.</td></tr>
+      <tr><td class="k">Monetization</td><td class="v">None in v1. Pure growth. Venue partnerships and promoted spots come later, once the audience is real.</td></tr>
+      <tr><td class="k">Go to market</td><td class="v">Promote from day one, a best in class launch planned as its own push.</td></tr>
+    </table>
+
+    <div class="tags">
+      <span class="tag">Live map</span>
+      <span class="tag">Hanging review cards</span>
+      <span class="tag">Ranked lists</span>
+      <span class="tag">Friends and usernames</span>
+      <span class="tag">Guides</span>
+      <span class="tag">Events</span>
+      <span class="tag">Badges and streaks</span>
+      <span class="tag">Beautiful profile</span>
+    </div>
+
+    <div class="callout">
+      <h4>The one line</h4>
+      <p>If anyone in the city wants to know something exciting to do, they open Adda. That is the whole goal, and everything we build points at it.</p>
+    </div>
+  </div>
+  <div class="brandfoot"><b>adda</b> · find your spots</div>
+  <div class="pagenum">04</div>
+</section>
+
+<!-- ================= PAGE 5 : ROADMAP + FUTURE ================= -->
+<section class="page">
+  <div class="content">
+    <h2 class="section">04 · How we build it</h2>
+    <h3 class="q">Big vision, <em>shipped in beautiful stages.</em></h3>
+    <p class="lead muted">The goal is the full experience. The method is staged, so what we have is always polished and shippable, and we never stall in a half built app.</p>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><span class="t"><b>Onboarding and foundation.</b> The first impression, interactive and premium from the first tap.</span></div>
+      <div class="step"><span class="n">2</span><span class="t"><b>The live map.</b> Hanging review cards and rich place detail pages.</span></div>
+      <div class="step"><span class="n">3</span><span class="t"><b>Add a spot and rank it.</b> The addictive better or worse comparison flow.</span></div>
+      <div class="step"><span class="n">4</span><span class="t"><b>The profile.</b> My addas, ranked lists, badges and streaks.</span></div>
+      <div class="step"><span class="n">5</span><span class="t"><b>Friend graph.</b> Contacts, usernames, follow and unfollow, friends recommend this.</span></div>
+      <div class="step"><span class="n">6</span><span class="t"><b>Events and guides.</b> What is on now, and curated lists worth following.</span></div>
+      <div class="step"><span class="n">7</span><span class="t"><b>Seeding pipeline.</b> Fill Vizag with real, high quality spots before launch.</span></div>
+    </div>
+
+    <h2 class="section" style="margin-top:8mm;">05 · Where it goes next</h2>
+    <p class="lead muted">We keep adding, so Adda becomes the most used app people have. A few directions on the table:</p>
+    <div class="grid2">
+      <div class="card"><span class="idx">Get me there</span><h4>Ride in one tap</h4><p>Tap a spot and go. Hand off to a ride app that takes you straight to the door.</p></div>
+      <div class="card"><span class="idx">Book and order</span><h4>Act on the spot</h4><p>Reserve a table or order ahead from inside the place you just discovered.</p></div>
+      <div class="card"><span class="idx">Together</span><h4>Plans with friends</h4><p>Turn a saved spot into a plan, invite friends, and lock a time as a group.</p></div>
+      <div class="card"><span class="idx">For you</span><h4>Taste that learns</h4><p>Recommendations tuned to you and your friends, so the map gets smarter every week.</p></div>
+    </div>
+  </div>
+  <div class="brandfoot"><b>adda</b> · find your spots</div>
+  <div class="pagenum">05</div>
+</section>
+
+<!-- ================= PAGE 6 : WHY + CLOSE ================= -->
+<section class="page">
+  <div class="content">
+    <h2 class="section">06 · Why this wins</h2>
+    <h3 class="q">A name people say, a map people feel, <em>a habit people keep.</em></h3>
+    <div class="grid2">
+      <div class="card"><span class="idx">01</span><h4>Built to be talked about</h4><p>Adda is already in everyone's mouth in Vizag, so the product markets itself in normal conversation.</p></div>
+      <div class="card"><span class="idx">02</span><h4>City first, done right</h4><p>We win Vizag completely before we scale. A full, loved map in one city beats a thin map in fifty.</p></div>
+      <div class="card"><span class="idx">03</span><h4>Daily by design</h4><p>Food and places are an everyday need. Ranked lists, streaks and friends bring people back.</p></div>
+      <div class="card"><span class="idx">04</span><h4>We already have the pieces</h4><p>Restaurant relationships, real menus and existing food data give us a head start most new apps never have.</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:8mm;">
+      <h4>Where we go from here</h4>
+      <p>This brief is a living document. Features and priorities will keep growing as we build. Bring your ideas, and let us make this the best app the city has.</p>
+    </div>
+  </div>
+  <div class="brandfoot">a <b>made. by ac</b> product · internal team brief</div>
+  <div class="pagenum">06</div>
+</section>
+
+</body>
+</html>

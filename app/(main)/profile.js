@@ -1,0 +1,170 @@
+import React, { useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { colors, fonts, radius, STORAGE } from '../../constants/theme';
+import PixelAvatar from '../../components/PixelAvatar';
+import { getCategory, getSpot } from '../../constants/spots';
+import { getPerson } from '../../constants/people';
+import { useRankings, resetRankings } from '../../lib/rankStore';
+import { useFollowing, resetFollowing } from '../../lib/socialStore';
+import { useGoing, resetGoing } from '../../lib/eventStore';
+
+export default function Profile() {
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const [name, setName] = useState('friend');
+  const { ordered, total } = useRankings();
+  const { ids: following, count: followCount } = useFollowing();
+  const { count: goingCount } = useGoing();
+
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE.username).then((v) => v && setName(v)).catch(() => {});
+  }, []);
+
+  const reset = async () => {
+    await resetRankings();
+    await resetFollowing();
+    await resetGoing();
+    await AsyncStorage.multiRemove([STORAGE.onboarded, STORAGE.username, STORAGE.locationAsked]).catch(() => {});
+    router.replace('/onboarding');
+  };
+
+  const ranked = ordered
+    .map((r) => ({ spot: getSpot(r.id), score: r.score, rank: r.rank }))
+    .filter((r) => r.spot)
+    .slice(0, 8);
+
+  return (
+    <View style={styles.root}>
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 20, paddingBottom: 120 }}>
+        <View style={styles.header}>
+          <PixelAvatar seed={name} size={88} tint={colors.maroon} style={{ borderColor: colors.red, borderWidth: 3 }} />
+          <Text style={styles.name}>@{name}</Text>
+          <Text style={styles.tagline}>Exploring Vizag, one adda at a time.</Text>
+
+          <View style={styles.stats}>
+            <Stat n={String(total)} l="ranked" />
+            <Stat n={String(goingCount)} l="events" />
+            <Stat n={String(followCount)} l="friends" />
+            <Stat n={total > 0 ? '1' : '0'} l="streak" flame />
+          </View>
+
+          {followCount > 0 ? (
+            <Pressable style={styles.friendsStrip} onPress={() => router.push('/friends')}>
+              <View style={{ flexDirection: 'row' }}>
+                {following.slice(0, 5).map((pid, idx) => {
+                  const p = getPerson(pid);
+                  if (!p) return null;
+                  return (
+                    <PixelAvatar key={pid} seed={pid} size={30} tint={p.tint} style={{ marginLeft: idx === 0 ? 0 : -10 }} />
+                  );
+                })}
+              </View>
+              <Text style={styles.friendsStripTxt}>Friends you follow</Text>
+              <Ionicons name="chevron-forward" size={18} color={colors.textOnDarkFaint} />
+            </Pressable>
+          ) : (
+            <Pressable style={styles.findFriends} onPress={() => router.push('/friends')}>
+              <Ionicons name="person-add" size={16} color={colors.red} />
+              <Text style={styles.findFriendsTxt}>Find friends to follow</Text>
+            </Pressable>
+          )}
+        </View>
+
+        <Text style={styles.section}>YOUR TOP SPOTS</Text>
+
+        {ranked.length === 0 ? (
+          <View style={styles.empty}>
+            <Ionicons name="trophy-outline" size={30} color={colors.textOnDarkFaint} />
+            <Text style={styles.emptyTitle}>No addas yet</Text>
+            <Text style={styles.emptyTxt}>Rank a spot and it lands here, sorted by how much you loved it.</Text>
+            <Pressable style={styles.emptyBtn} onPress={() => router.replace('/map')}>
+              <Text style={styles.emptyBtnTxt}>Find spots to rank</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={styles.list}>
+            {ranked.map(({ spot, score, rank }) => {
+              const cat = getCategory(spot.category);
+              return (
+                <Pressable key={spot.id} style={styles.row} onPress={() => router.push(`/spot/${spot.id}`)}>
+                  <Text style={styles.rank}>{rank}</Text>
+                  <View style={[styles.rowIcon, { backgroundColor: cat.color }]}>
+                    <Ionicons name={cat.icon} size={16} color="#fff" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.rowName}>{spot.name}</Text>
+                    <Text style={styles.rowMeta}>{cat.label} · {spot.area}</Text>
+                  </View>
+                  <Text style={styles.rowScore}>{score.toFixed(1)}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
+
+        <Pressable onPress={reset} style={styles.reset} hitSlop={10}>
+          <Ionicons name="refresh" size={16} color={colors.textOnDarkFaint} />
+          <Text style={styles.resetTxt}>Reset & replay onboarding</Text>
+        </Pressable>
+      </ScrollView>
+    </View>
+  );
+}
+
+function Stat({ n, l, flame }) {
+  return (
+    <View style={styles.stat}>
+      {flame ? (
+        <View style={styles.streak}>
+          <Ionicons name="flame" size={16} color={colors.red} />
+          <Text style={styles.statN}>{n}</Text>
+        </View>
+      ) : (
+        <Text style={styles.statN}>{n}</Text>
+      )}
+      <Text style={styles.statL}>{l}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.ink },
+  header: { alignItems: 'center', paddingHorizontal: 20 },
+  avatar: {
+    width: 88, height: 88, borderRadius: 44, backgroundColor: colors.maroon,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: colors.red,
+  },
+  avatarTxt: { color: '#fff', fontFamily: fonts.display, fontSize: 44 },
+  name: { fontFamily: fonts.extrabold, fontSize: 24, color: colors.textOnDark, marginTop: 14 },
+  tagline: { fontFamily: fonts.regular, fontSize: 14, color: colors.textOnDarkMuted, marginTop: 6 },
+  stats: { flexDirection: 'row', marginTop: 22, backgroundColor: colors.ink2, borderRadius: radius.lg, paddingVertical: 16, width: '100%', borderWidth: 1, borderColor: colors.hairline },
+  stat: { flex: 1, alignItems: 'center' },
+  streak: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  statN: { fontFamily: fonts.extrabold, fontSize: 20, color: colors.textOnDark },
+  statL: { fontFamily: fonts.medium, fontSize: 11.5, color: colors.textOnDarkMuted, marginTop: 3, textTransform: 'uppercase', letterSpacing: 0.5 },
+  friendsStrip: { flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%', marginTop: 14, backgroundColor: colors.ink2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.hairline, padding: 12 },
+  fAvatar: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: colors.ink },
+  fAvatarTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 13 },
+  friendsStripTxt: { flex: 1, fontFamily: fonts.semibold, fontSize: 14, color: colors.textOnDark },
+  findFriends: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', marginTop: 14, backgroundColor: colors.ink2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.hairline, paddingVertical: 14 },
+  findFriendsTxt: { fontFamily: fonts.semibold, fontSize: 14, color: colors.red },
+  section: { fontFamily: fonts.label, fontSize: 12, letterSpacing: 2.5, color: colors.red, marginTop: 30, marginBottom: 12, paddingHorizontal: 20 },
+  list: { paddingHorizontal: 20, gap: 10 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.ink2, borderRadius: radius.md, padding: 12, borderWidth: 1, borderColor: colors.hairline },
+  rank: { fontFamily: fonts.display, fontSize: 20, color: colors.red, width: 24 },
+  rowIcon: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  rowName: { fontFamily: fonts.bold, fontSize: 15, color: colors.textOnDark },
+  rowMeta: { fontFamily: fonts.medium, fontSize: 12, color: colors.textOnDarkMuted, marginTop: 2 },
+  rowScore: { fontFamily: fonts.extrabold, fontSize: 16, color: colors.textOnDark },
+  empty: { alignItems: 'center', marginHorizontal: 20, backgroundColor: colors.ink2, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.hairline, padding: 26, gap: 8 },
+  emptyTitle: { fontFamily: fonts.bold, fontSize: 17, color: colors.textOnDark, marginTop: 4 },
+  emptyTxt: { fontFamily: fonts.regular, fontSize: 13.5, color: colors.textOnDarkMuted, textAlign: 'center', lineHeight: 20 },
+  emptyBtn: { marginTop: 10, backgroundColor: colors.red, paddingHorizontal: 20, paddingVertical: 12, borderRadius: radius.md },
+  emptyBtnTxt: { fontFamily: fonts.label, fontSize: 13, letterSpacing: 1, color: '#fff', textTransform: 'uppercase' },
+  reset: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 30 },
+  resetTxt: { fontFamily: fonts.medium, fontSize: 13, color: colors.textOnDarkFaint },
+});
