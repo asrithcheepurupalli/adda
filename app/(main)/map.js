@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -33,9 +34,12 @@ export default function MapScreen() {
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   // map style cycles: real streets -> satellite -> pixel satellite -> pixel world
-  const MAP_MODES = ['standard', 'hybrid', 'pixelearth', 'pixel'];
+  // (native maps don't exist on web, so web only offers the modes that work there)
+  const MAP_MODES = Platform.OS === 'web'
+    ? ['pixelearth', 'pixel']
+    : ['standard', 'hybrid', 'pixelearth', 'pixel'];
   const MODE_ICON = { standard: 'map', hybrid: 'globe', pixelearth: 'planet', pixel: 'game-controller' };
-  const [mapType, setMapType] = useState('standard');
+  const [mapType, setMapType] = useState(MAP_MODES[0]);
   const mapRef = useRef(null);
   const listRef = useRef(null);
   const fromPinRef = useRef(false);
