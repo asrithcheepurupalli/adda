@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import CityMap from '../../components/CityMap';
 import SpotMap from '../../components/SpotMap';
 import PixelAvatar from '../../components/PixelAvatar';
 import { CATEGORY_LIST, SPOTS, getCategory } from '../../constants/spots';
@@ -30,6 +31,10 @@ export default function MapScreen() {
   const [active, setActive] = useState(null);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(null);
+  // map style cycles: real streets -> satellite -> pixel world
+  const MAP_MODES = ['standard', 'hybrid', 'pixel'];
+  const MODE_ICON = { standard: 'map', hybrid: 'globe', pixel: 'game-controller' };
+  const [mapType, setMapType] = useState('standard');
   const mapRef = useRef(null);
   const listRef = useRef(null);
   const fromPinRef = useRef(false);
@@ -97,13 +102,24 @@ export default function MapScreen() {
 
   return (
     <View style={styles.root}>
-      <SpotMap
-        ref={mapRef}
-        spots={points}
-        selectedId={selectedId}
-        onSelect={selectFromPin}
-        onOpen={open}
-      />
+      {mapType === 'pixel' ? (
+        <SpotMap
+          ref={mapRef}
+          spots={points}
+          selectedId={selectedId}
+          onSelect={selectFromPin}
+          onOpen={open}
+        />
+      ) : (
+        <CityMap
+          ref={mapRef}
+          spots={points}
+          selectedId={selectedId}
+          onSelect={selectFromPin}
+          onOpen={open}
+          mapType={mapType}
+        />
+      )}
 
       <View style={[styles.top, { paddingTop: insets.top + 8 }]} pointerEvents="box-none">
         <View style={styles.searchRow}>
@@ -143,6 +159,15 @@ export default function MapScreen() {
       </View>
 
       <View style={[styles.bottom, { paddingBottom: insets.bottom + 78 }]} pointerEvents="box-none">
+        <Pressable
+          style={styles.recenter}
+          onPress={() => {
+            try { Haptics.selectionAsync(); } catch {}
+            setMapType((m) => MAP_MODES[(MAP_MODES.indexOf(m) + 1) % MAP_MODES.length]);
+          }}
+        >
+          <Ionicons name={MODE_ICON[mapType]} size={20} color={colors.textOnLight} />
+        </Pressable>
         <Pressable
           style={styles.recenter}
           onPress={() => { setSelectedId(null); mapRef.current?.recenter(); }}
