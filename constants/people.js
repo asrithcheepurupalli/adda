@@ -7,8 +7,8 @@ export const PEOPLE = [
     bio: 'Beach walker, biryani believer.',
     recos: [
       { spot: 'rk-beach', score: 9.4, quote: 'Sunset here never gets old' },
-      { spot: 'daspalla', score: 9.0, quote: 'Andhra thali, come hungry' },
-      { spot: 'beach-road-grill', score: 8.8, quote: 'Coal-grilled prawns, trust me' },
+      { spot: 'sairam-parlour', score: 9.0, quote: 'Mysore bajji before 9am' },
+      { spot: 'dharani-daspalla', score: 8.8, quote: 'Andhra thali, come hungry' },
     ],
   },
   {
@@ -24,9 +24,9 @@ export const PEOPLE = [
     id: 'aisha', username: 'aisha', name: 'Aisha', tint: '#E5A020', followers: 428,
     bio: 'Cafes, books, cold brew.',
     recos: [
-      { spot: 'sea-breeze', score: 8.9, quote: 'Best filter coffee in town' },
+      { spot: 'baes-coffee', score: 8.9, quote: 'Best filter coffee in town' },
       { spot: 'araku-coffee', score: 8.7, quote: 'Cold brew is dangerous' },
-      { spot: 'tenneti-park', score: 8.3, quote: 'Quiet in the mornings' },
+      { spot: 'beach-road-carts', score: 8.3, quote: 'Punugulu + sunset = therapy' },
     ],
   },
   {
@@ -42,26 +42,26 @@ export const PEOPLE = [
     id: 'meghana', username: 'meghana', name: 'Meghana', tint: '#B3474E', followers: 501,
     bio: 'Will find the best food anywhere.',
     recos: [
-      { spot: 'daspalla', score: 9.2, quote: 'Gongura mutton, always' },
-      { spot: 'beach-road-grill', score: 8.9, quote: 'Book a sunset table' },
-      { spot: 'sea-breeze', score: 8.4, quote: 'Great for a catch-up' },
+      { spot: 'dharani-daspalla', score: 9.2, quote: 'Gongura mutton, always' },
+      { spot: 'simhachalam', score: 8.9, quote: 'Go at dawn, it\'s serene' },
+      { spot: 'raju-gari-dhaba', score: 8.4, quote: 'Worth the drive north' },
     ],
   },
   {
     id: 'dev', username: 'dev', name: 'Dev', tint: '#7A3FB0', followers: 189,
     bio: 'Rooftops and last calls.',
     recos: [
-      { spot: 'the-terrace-bar', score: 8.8, quote: 'Rooftop cocktails, harbour view' },
-      { spot: 'beach-road-grill', score: 8.5, quote: 'Best on a Friday' },
-      { spot: 'araku-coffee', score: 8.0, quote: 'Solid espresso martini' },
+      { spot: 'skyy-bar', score: 8.8, quote: 'Rooftop cocktails, harbour view' },
+      { spot: 'raju-gari-dhaba', score: 8.5, quote: 'Ulavacharu biryani. That\'s it.' },
+      { spot: 'tds', score: 8.0, quote: 'Old faithful, never misses' },
     ],
   },
   {
     id: 'sana', username: 'sana', name: 'Sana', tint: '#8A57C0', followers: 273,
     bio: 'Weekday explorer, crowd avoider.',
     recos: [
-      { spot: 'kailasagiri', score: 8.7, quote: 'Go on a weekday' },
-      { spot: 'rushikonda', score: 8.5, quote: 'Surf lessons in the morning' },
+      { spot: 'erra-matti-dibbalu', score: 8.7, quote: 'Golden hour, thank me later' },
+      { spot: 'kailasagiri', score: 8.5, quote: 'Go on a weekday' },
       { spot: 'submarine-museum', score: 8.1, quote: 'Weirdly moving' },
     ],
   },
@@ -70,8 +70,8 @@ export const PEOPLE = [
     bio: 'Vizag local, old reliable picks.',
     recos: [
       { spot: 'rk-beach', score: 9.0, quote: 'Been coming here for years' },
-      { spot: 'daspalla', score: 8.7, quote: 'Old reliable' },
-      { spot: 'submarine-museum', score: 8.3, quote: 'Great for the kids' },
+      { spot: 'kambalakonda', score: 8.7, quote: 'Best morning trek in town' },
+      { spot: 'dharani-daspalla', score: 8.3, quote: 'Old reliable' },
     ],
   },
 ];

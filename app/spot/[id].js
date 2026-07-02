@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Image,
   Linking,
@@ -16,22 +16,26 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import AddaButton from '../../components/AddaButton';
 import PixelAvatar from '../../components/PixelAvatar';
-import { getCategory, getSpot } from '../../constants/spots';
+import { getCategory } from '../../constants/spots';
 import { peopleWhoRecommend } from '../../constants/people';
 import { photoForSpot } from '../../lib/photos';
 import { useRankings } from '../../lib/rankStore';
 import { useFollowing } from '../../lib/socialStore';
+import { useSaved } from '../../lib/savedStore';
+import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { colors, fonts, radius } from '../../constants/theme';
 
 export default function SpotDetail() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [saved, setSaved] = useState(false);
   const { scores, ordered } = useRankings();
   const { isFollowing } = useFollowing();
+  const { isSaved, toggle } = useSaved();
+  useUserSpots(); // keeps user-added spots loaded for getAnySpot
+  const saved = isSaved(id);
 
-  const spot = getSpot(id);
+  const spot = getAnySpot(id);
   const myScore = scores?.[id];
   const myRank = ordered?.find((r) => r.id === id)?.rank;
   if (!spot) {
@@ -52,7 +56,7 @@ export default function SpotDetail() {
 
   const toggleSave = () => {
     try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
-    setSaved((s) => !s);
+    toggle(id);
   };
 
   const directions = () => {
@@ -93,10 +97,12 @@ export default function SpotDetail() {
           <Pressable onPress={toggleSave} style={[styles.saveTop, { top: insets.top + 8 }]} hitSlop={12}>
             <Ionicons name={saved ? 'heart' : 'heart-outline'} size={22} color="#fff" />
           </Pressable>
-          <View style={styles.heroScore}>
-            <Ionicons name="star" size={14} color={colors.red} />
-            <Text style={styles.heroScoreTxt}>{(myScore ?? spot.score).toFixed(1)}</Text>
-          </View>
+          {(myScore ?? spot.score) != null ? (
+            <View style={styles.heroScore}>
+              <Ionicons name="star" size={14} color={colors.red} />
+              <Text style={styles.heroScoreTxt}>{(myScore ?? spot.score).toFixed(1)}</Text>
+            </View>
+          ) : null}
           {myRank ? (
             <View style={styles.heroRank}>
               <Ionicons name="trophy" size={12} color="#fff" />

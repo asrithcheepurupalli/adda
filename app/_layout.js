@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -43,6 +44,7 @@ export default function RootLayout() {
   if (!loaded && !error) return null;
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <View style={{ flex: 1, backgroundColor: colors.ink }} onLayout={onReady}>
       <StatusBar style="light" />
       <Stack
@@ -59,10 +61,13 @@ export default function RootLayout() {
         <Stack.Screen name="onboarding/username" />
         <Stack.Screen name="(main)" options={{ animation: 'fade' }} />
         <Stack.Screen name="spot/[id]" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="guide/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="add-spot" options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
         <Stack.Screen name="rank/[id]" options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
         <Stack.Screen name="person/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="event/[id]" options={{ animation: 'slide_from_bottom' }} />
       </Stack>
     </View>
+    </GestureHandlerRootView>
   );
 }
