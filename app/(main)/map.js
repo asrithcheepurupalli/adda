@@ -22,6 +22,7 @@ import { CATEGORY_LIST, SPOTS, getCategory } from '../../constants/spots';
 import { EVENTS, EVENT_CATEGORY_LIST, getEventCategory } from '../../constants/events';
 import { photoForSpot, photoForEvent } from '../../lib/photos';
 import { useUserSpots } from '../../lib/userSpots';
+import { touchStreak } from '../../lib/streakStore';
 import { colors, fonts, radius } from '../../constants/theme';
 
 const CARD_W = 240;
@@ -50,6 +51,8 @@ export default function MapScreen() {
   const chips = isEvents ? EVENT_CATEGORY_LIST : CATEGORY_LIST;
 
   const { spots: userSpots } = useUserSpots();
+
+  React.useEffect(() => { touchStreak(); }, []);
 
   const points = useMemo(() => {
     const allSpots = [...SPOTS, ...userSpots];
