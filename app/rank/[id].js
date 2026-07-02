@@ -6,7 +6,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import AddaButton from '../../components/AddaButton';
-import { getCategory, getSpot } from '../../constants/spots';
+import { getCategory } from '../../constants/spots';
+import { getAnySpot } from '../../lib/userSpots';
 import { ensureLoaded, getBucket, placeSpot, SENTIMENTS } from '../../lib/rankStore';
 import { colors, fonts, radius } from '../../constants/theme';
 
@@ -15,7 +16,7 @@ export default function RankFlow() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const spot = getSpot(id);
+  const spot = getAnySpot(id);
   const [step, setStep] = useState('sentiment');
   const [sentiment, setSentiment] = useState(null);
   const [mid, setMid] = useState(0);
@@ -89,7 +90,7 @@ export default function RankFlow() {
       {step === 'compare' && (
         <Compare
           spot={spot}
-          other={getSpot(search.current.bucket[mid])}
+          other={getAnySpot(search.current.bucket[mid])}
           onNew={() => pick(true)}
           onOther={() => pick(false)}
           onTooTough={tooTough}
@@ -138,9 +139,9 @@ function CompareCard({ spot, isNew, onPress }) {
         <Ionicons name={cat.icon} size={34} color="rgba(255,255,255,0.9)" />
         {isNew ? (
           <View style={styles.newTag}><Text style={styles.newTagTxt}>NEW</Text></View>
-        ) : (
+        ) : spot.score ? (
           <View style={styles.cmpScore}><Text style={styles.cmpScoreTxt}>{spot.score.toFixed(1)}</Text></View>
-        )}
+        ) : null}
       </View>
       <Text style={styles.cmpName} numberOfLines={1}>{spot.name}</Text>
       <Text style={styles.cmpMeta} numberOfLines={1}>{cat.label} · {spot.area}</Text>

@@ -21,6 +21,7 @@ import PixelAvatar from '../../components/PixelAvatar';
 import { CATEGORY_LIST, SPOTS, getCategory } from '../../constants/spots';
 import { EVENTS, EVENT_CATEGORY_LIST, getEventCategory } from '../../constants/events';
 import { photoForSpot, photoForEvent } from '../../lib/photos';
+import { useUserSpots } from '../../lib/userSpots';
 import { colors, fonts, radius } from '../../constants/theme';
 
 const CARD_W = 240;
@@ -48,10 +49,13 @@ export default function MapScreen() {
   const isEvents = mode === 'events';
   const chips = isEvents ? EVENT_CATEGORY_LIST : CATEGORY_LIST;
 
+  const { spots: userSpots } = useUserSpots();
+
   const points = useMemo(() => {
+    const allSpots = [...SPOTS, ...userSpots];
     let list = isEvents
       ? (active ? EVENTS.filter((e) => e.category === active) : EVENTS).map((e) => ({ ...e, _kind: 'event' }))
-      : (active ? SPOTS.filter((s) => s.category === active) : SPOTS).map((s) => ({ ...s, _kind: 'spot' }));
+      : (active ? allSpots.filter((s) => s.category === active) : allSpots).map((s) => ({ ...s, _kind: 'spot' }));
     // ignore punctuation so "baes" finds "Bae's Coffee"
     const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '');
     const q = norm(query.trim());
@@ -61,7 +65,7 @@ export default function MapScreen() {
       );
     }
     return list;
-  }, [mode, active, query]);
+  }, [mode, active, query, userSpots]);
 
   // searching flies the camera to the best match
   React.useEffect(() => {
@@ -175,6 +179,17 @@ export default function MapScreen() {
 
       <View style={[styles.bottom, { paddingBottom: insets.bottom + 78 }]} pointerEvents="box-none">
         <Pressable
+          accessibilityLabel="Add a spot"
+          style={[styles.recenter, styles.addBtn]}
+          onPress={() => {
+            try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
+            router.push('/add-spot');
+          }}
+        >
+          <Ionicons name="add" size={24} color="#fff" />
+        </Pressable>
+        <Pressable
+          accessibilityLabel="Map style"
           style={styles.recenter}
           onPress={() => {
             try { Haptics.selectionAsync(); } catch {}
@@ -184,6 +199,7 @@ export default function MapScreen() {
           <Ionicons name={MODE_ICON[mapType]} size={20} color={colors.textOnLight} />
         </Pressable>
         <Pressable
+          accessibilityLabel="Recenter"
           style={styles.recenter}
           onPress={() => { setSelectedId(null); mapRef.current?.recenter(); }}
         >
@@ -250,8 +266,14 @@ function SpotCard({ spot, selected, onPress }) {
       <View style={[styles.cardThumb, { backgroundColor: cat.color }]}>
         <Image source={{ uri: photoForSpot(spot, 480, 300) }} style={StyleSheet.absoluteFill} resizeMode="cover" />
         <View style={styles.scorePill}>
-          <Ionicons name="star" size={11} color={colors.red} />
-          <Text style={styles.scorePillTxt}>{spot.score.toFixed(1)}</Text>
+          {spot.score ? (
+            <>
+              <Ionicons name="star" size={11} color={colors.red} />
+              <Text style={styles.scorePillTxt}>{spot.score.toFixed(1)}</Text>
+            </>
+          ) : (
+            <Text style={styles.scorePillTxt}>NEW</Text>
+          )}
         </View>
       </View>
       <View style={styles.cardBody}>
@@ -326,6 +348,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOpacity: 0.16, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6,
   },
+  addBtn: { backgroundColor: colors.red },
   emptyPill: {
     alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: 'rgba(18,15,14,0.9)', borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 10,

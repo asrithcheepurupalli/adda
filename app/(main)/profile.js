@@ -6,7 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, fonts, radius, STORAGE } from '../../constants/theme';
 import PixelAvatar from '../../components/PixelAvatar';
-import { getCategory, getSpot } from '../../constants/spots';
+import { getCategory } from '../../constants/spots';
+import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { getPerson } from '../../constants/people';
 import { useRankings, resetRankings } from '../../lib/rankStore';
 import { useFollowing, resetFollowing } from '../../lib/socialStore';
@@ -16,6 +17,7 @@ export default function Profile() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [name, setName] = useState('friend');
+  useUserSpots(); // keep user-added spots resolvable in rankings
   const { ordered, total } = useRankings();
   const { ids: following, count: followCount } = useFollowing();
   const { count: goingCount } = useGoing();
@@ -33,7 +35,7 @@ export default function Profile() {
   };
 
   const ranked = ordered
-    .map((r) => ({ spot: getSpot(r.id), score: r.score, rank: r.rank }))
+    .map((r) => ({ spot: getAnySpot(r.id), score: r.score, rank: r.rank }))
     .filter((r) => r.spot)
     .slice(0, 8);
 
