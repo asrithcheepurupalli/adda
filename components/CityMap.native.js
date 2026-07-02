@@ -24,9 +24,14 @@ const VIZAG = {
 };
 const FOCUS_DELTA = 0.024;
 
-function PixelPin({ color, icon, badge, selected }) {
+function PixelPin({ color, icon, badge, friend, name, selected }) {
   return (
     <View style={styles.pinWrap}>
+      {selected ? (
+        <View style={styles.pinLabel}>
+          <Text style={styles.pinLabelTxt} numberOfLines={1}>{name}</Text>
+        </View>
+      ) : null}
       {selected ? <View style={styles.pinGlow} /> : null}
       <View style={[styles.pin, { backgroundColor: color }, selected && styles.pinSel]}>
         <Ionicons name={icon} size={selected ? 17 : 15} color="#fff" />
@@ -35,19 +40,11 @@ function PixelPin({ color, icon, badge, selected }) {
       {badge ? (
         <View style={styles.badge}><Text style={styles.badgeTxt}>{badge}</Text></View>
       ) : null}
-    </View>
-  );
-}
-
-function FriendMarkerView({ friend, name, selected }) {
-  return (
-    <View style={styles.char}>
-      <PixelAvatar seed={friend.name} size={selected ? 38 : 34} tint={friend.tint} />
-      <View style={[styles.body, { backgroundColor: friend.tint }]} />
-      <View style={styles.legs} />
-      <View style={[styles.nameTag, selected && styles.nameTagSel]}>
-        <Text style={styles.nameTxt} numberOfLines={1}>{name}</Text>
-      </View>
+      {friend ? (
+        <View style={[styles.friendDot, { backgroundColor: friend.tint }]}>
+          <Text style={styles.friendDotTxt}>{friend.name[0]}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -144,16 +141,14 @@ const CityMap = forwardRef(function CityMap(
             zIndex={selected ? 40 : 10}
             onPress={(e) => { e.stopPropagation?.(); pressPin(p); }}
           >
-            {p._kind !== 'event' && p.friend ? (
-              <FriendMarkerView friend={p.friend} name={p.name} selected={selected} />
-            ) : (
-              <PixelPin
-                color={kind.color}
-                icon={kind.icon}
-                badge={p._kind === 'event' ? p.day : p.score ? p.score.toFixed(1) : null}
-                selected={selected}
-              />
-            )}
+            <PixelPin
+              color={kind.color}
+              icon={kind.icon}
+              badge={p._kind === 'event' ? p.day : p.score ? p.score.toFixed(1) : null}
+              friend={p._kind !== 'event' ? p.friend : null}
+              name={p._kind === 'event' ? p.title : p.name}
+              selected={selected}
+            />
           </Marker>
         );
       })}
@@ -181,12 +176,16 @@ const styles = StyleSheet.create({
   },
   badgeTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 9 },
 
-  char: { alignItems: 'center' },
-  body: {
-    width: 24, height: 12, borderTopLeftRadius: 4, borderTopRightRadius: 4, marginTop: -2,
-    borderWidth: 2, borderColor: '#fff', borderBottomWidth: 0,
+  pinLabel: {
+    marginBottom: 4, backgroundColor: colors.ink, borderRadius: 5, paddingHorizontal: 7,
+    paddingVertical: 3, borderWidth: 1, borderColor: '#fff', maxWidth: 140,
   },
-  legs: { width: 16, height: 8, backgroundColor: '#241E1C' },
+  pinLabelTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 10 },
+  friendDot: {
+    position: 'absolute', top: 0, left: -10, width: 18, height: 18, borderRadius: 9,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#fff',
+  },
+  friendDotTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 10 },
   nameTag: {
     marginTop: 3, backgroundColor: colors.ink, paddingHorizontal: 6, paddingVertical: 2,
     borderRadius: 4, borderWidth: 1, borderColor: '#fff', maxWidth: 110,

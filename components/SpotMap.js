@@ -332,35 +332,29 @@ function Marker({ p, pos, index, selected, onPress }) {
     <View style={[styles.marker, { left: pos.x, top: pos.y, zIndex: selected ? 40 : 10 }]}>
       <Animated.View style={st}>
         <Pressable onPress={() => onPress(p)} hitSlop={8}>
-          {p._kind !== 'event' && p.friend ? (
-            <View style={styles.char}>
-              <PixelAvatar seed={p.friend.name} size={34} tint={p.friend.tint} />
-              <View style={[styles.body, { backgroundColor: p.friend.tint }]} />
-              <View style={styles.legs} />
-              <View style={[styles.nameTag, selected && styles.nameTagSel]}>
-                <Text style={styles.nameTxt} numberOfLines={1}>{p.name}</Text>
+          <View style={styles.pinWrap}>
+            {selected ? (
+              <View style={[styles.pinLabel]}>
+                <Text style={styles.pinLabelTxt} numberOfLines={1}>
+                  {p._kind === 'event' ? p.title : p.name}
+                </Text>
               </View>
+            ) : null}
+            <View style={[styles.pin, { backgroundColor: kind.color }, selected && styles.pinSel]}>
+              <Ionicons name={kind.icon} size={15} color="#fff" />
             </View>
-          ) : (
-            <View style={styles.pinWrap}>
-              {selected ? (
-                <View style={[styles.pinLabel]}>
-                  <Text style={styles.pinLabelTxt} numberOfLines={1}>
-                    {p._kind === 'event' ? p.title : p.name}
-                  </Text>
-                </View>
-              ) : null}
-              <View style={[styles.pin, { backgroundColor: kind.color }, selected && styles.pinSel]}>
-                <Ionicons name={kind.icon} size={15} color="#fff" />
+            <View style={[styles.pinStem, { backgroundColor: kind.color }]} />
+            {p._kind === 'event' ? (
+              <View style={styles.badge}><Text style={styles.badgeTxt}>{p.day}</Text></View>
+            ) : p.score ? (
+              <View style={styles.badge}><Text style={styles.badgeTxt}>{p.score.toFixed(1)}</Text></View>
+            ) : null}
+            {p._kind !== 'event' && p.friend ? (
+              <View style={[styles.friendDot, { backgroundColor: p.friend.tint }]}>
+                <Text style={styles.friendDotTxt}>{p.friend.name[0]}</Text>
               </View>
-              <View style={[styles.pinStem, { backgroundColor: kind.color }]} />
-              {p._kind === 'event' ? (
-                <View style={styles.badge}><Text style={styles.badgeTxt}>{p.day}</Text></View>
-              ) : p.score ? (
-                <View style={styles.badge}><Text style={styles.badgeTxt}>{p.score.toFixed(1)}</Text></View>
-              ) : null}
-            </View>
-          )}
+            ) : null}
+          </View>
         </Pressable>
       </Animated.View>
     </View>
@@ -640,4 +634,9 @@ const styles = StyleSheet.create({
   pinLabelTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 10 },
   badge: { position: 'absolute', top: -8, right: -12, backgroundColor: colors.ink, borderRadius: 5, paddingHorizontal: 4, paddingVertical: 1, borderWidth: 1, borderColor: '#fff' },
   badgeTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 9 },
+  friendDot: {
+    position: 'absolute', top: -8, left: -10, width: 18, height: 18, borderRadius: 9,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#fff',
+  },
+  friendDotTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 10 },
 });
