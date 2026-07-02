@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import CityMap from '../../components/CityMap';
+import PixelEarth from '../../components/PixelEarth';
 import SpotMap from '../../components/SpotMap';
 import PixelAvatar from '../../components/PixelAvatar';
 import { CATEGORY_LIST, SPOTS, getCategory } from '../../constants/spots';
@@ -31,9 +32,9 @@ export default function MapScreen() {
   const [active, setActive] = useState(null);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(null);
-  // map style cycles: real streets -> satellite -> pixel world
-  const MAP_MODES = ['standard', 'hybrid', 'pixel'];
-  const MODE_ICON = { standard: 'map', hybrid: 'globe', pixel: 'game-controller' };
+  // map style cycles: real streets -> satellite -> pixel satellite -> pixel world
+  const MAP_MODES = ['standard', 'hybrid', 'pixelearth', 'pixel'];
+  const MODE_ICON = { standard: 'map', hybrid: 'globe', pixelearth: 'planet', pixel: 'game-controller' };
   const [mapType, setMapType] = useState('standard');
   const mapRef = useRef(null);
   const listRef = useRef(null);
@@ -104,6 +105,14 @@ export default function MapScreen() {
     <View style={styles.root}>
       {mapType === 'pixel' ? (
         <SpotMap
+          ref={mapRef}
+          spots={points}
+          selectedId={selectedId}
+          onSelect={selectFromPin}
+          onOpen={open}
+        />
+      ) : mapType === 'pixelearth' ? (
+        <PixelEarth
           ref={mapRef}
           spots={points}
           selectedId={selectedId}
