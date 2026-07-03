@@ -32,7 +32,8 @@ export default function SignIn() {
   const shake = useRef(new Animated.Value(0)).current;
 
   const emailValid = EMAIL_RE.test(email.trim());
-  const codeValid = code.trim().length === 6;
+  // Supabase OTP length is configurable (6-10 digits) — accept the range
+  const codeValid = code.trim().length >= 6;
 
   const doShake = () => {
     Animated.sequence([
@@ -96,8 +97,8 @@ export default function SignIn() {
         <Text style={styles.title}>{isEmail ? 'Your email' : 'Enter the code'}</Text>
         <Text style={styles.body}>
           {isEmail
-            ? 'One account, all your spots and friends — synced. We’ll send a 6-digit code, no password ever.'
-            : `We sent a 6-digit code to ${email.trim()}. It can take a minute to arrive.`}
+            ? 'One account, all your spots and friends — synced. We’ll send a sign-in code, no password ever.'
+            : `We sent a sign-in code to ${email.trim()}. It can take a minute to arrive.`}
         </Text>
 
         <Animated.View style={[styles.inputWrap, { transform: [{ translateX }] }]}>
@@ -119,7 +120,7 @@ export default function SignIn() {
           ) : (
             <TextInput
               value={code}
-              onChangeText={(t) => setCode(t.replace(/[^0-9]/g, '').slice(0, 6))}
+              onChangeText={(t) => setCode(t.replace(/[^0-9]/g, '').slice(0, 10))}
               placeholder="000000"
               placeholderTextColor={colors.textOnDarkFaint}
               autoFocus
