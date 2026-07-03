@@ -12,15 +12,31 @@ import { getPerson } from '../../constants/people';
 import { useRankings, resetRankings } from '../../lib/rankStore';
 import { useFollowing, resetFollowing } from '../../lib/socialStore';
 import { useGoing, resetGoing } from '../../lib/eventStore';
+import { useSaved, resetSaved } from '../../lib/savedStore';
+import { resetUserSpots } from '../../lib/userSpots';
+import { useStreak, resetStreak } from '../../lib/streakStore';
+import { computeBadges } from '../../lib/badges';
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [name, setName] = useState('friend');
-  useUserSpots(); // keep user-added spots resolvable in rankings
+  const { count: userSpotCount } = useUserSpots(); // also keeps user spots resolvable
   const { ordered, total } = useRankings();
   const { ids: following, count: followCount } = useFollowing();
   const { count: goingCount } = useGoing();
+  const { count: savedCount } = useSaved();
+  const streak = useStreak();
+
+  const badges = computeBadges({
+    rankedCount: total,
+    savedCount,
+    userSpotCount,
+    followCount,
+    goingCount,
+    bestStreak: streak.best,
+  });
+  const earnedCount = badges.filter((b) => b.earned).length;
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE.username).then((v) => v && setName(v)).catch(() => {});
@@ -30,6 +46,9 @@ export default function Profile() {
     await resetRankings();
     await resetFollowing();
     await resetGoing();
+    await resetSaved();
+    await resetUserSpots();
+    await resetStreak();
     await AsyncStorage.multiRemove([STORAGE.onboarded, STORAGE.username, STORAGE.locationAsked]).catch(() => {});
     router.replace('/onboarding');
   };
@@ -51,7 +70,7 @@ export default function Profile() {
             <Stat n={String(total)} l="ranked" />
             <Stat n={String(goingCount)} l="events" />
             <Stat n={String(followCount)} l="friends" />
-            <Stat n={total > 0 ? '1' : '0'} l="streak" flame />
+            <Stat n={String(streak.current)} l="streak" flame lit={streak.current > 0} />
           </View>
 
           {followCount > 0 ? (
@@ -74,6 +93,28 @@ export default function Profile() {
               <Text style={styles.findFriendsTxt}>Find friends to follow</Text>
             </Pressable>
           )}
+        </View>
+
+        <View style={styles.sectionRow}>
+          <Text style={styles.section}>BADGES</Text>
+          <Text style={styles.sectionCount}>{earnedCount}/{badges.length}</Text>
+        </View>
+        <View style={styles.badgeGrid}>
+          {badges.map((b) => (
+            <View key={b.id} style={[styles.badge, !b.earned && styles.badgeLocked]}>
+              <View style={[styles.badgeIcon, { backgroundColor: b.earned ? b.color : colors.ink3 }]}>
+                <Ionicons
+                  name={b.earned ? b.icon : 'lock-closed'}
+                  size={20}
+                  color={b.earned ? '#fff' : colors.textOnDarkFaint}
+                />
+              </View>
+              <Text style={[styles.badgeLabel, !b.earned && { color: colors.textOnDarkFaint }]} numberOfLines={1}>
+                {b.label}
+              </Text>
+              <Text style={styles.badgeDesc} numberOfLines={2}>{b.desc}</Text>
+            </View>
+          ))}
         </View>
 
         <Text style={styles.section}>YOUR TOP SPOTS</Text>
@@ -117,12 +158,12 @@ export default function Profile() {
   );
 }
 
-function Stat({ n, l, flame }) {
+function Stat({ n, l, flame, lit }) {
   return (
     <View style={styles.stat}>
       {flame ? (
         <View style={styles.streak}>
-          <Ionicons name="flame" size={16} color={colors.red} />
+          <Ionicons name="flame" size={16} color={lit ? colors.red : colors.textOnDarkFaint} />
           <Text style={styles.statN}>{n}</Text>
         </View>
       ) : (
@@ -155,6 +196,18 @@ const styles = StyleSheet.create({
   findFriends: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', marginTop: 14, backgroundColor: colors.ink2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.hairline, paddingVertical: 14 },
   findFriendsTxt: { fontFamily: fonts.semibold, fontSize: 14, color: colors.red },
   section: { fontFamily: fonts.label, fontSize: 12, letterSpacing: 2.5, color: colors.red, marginTop: 30, marginBottom: 12, paddingHorizontal: 20 },
+  sectionRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingRight: 20 },
+  sectionCount: { fontFamily: fonts.bold, fontSize: 12.5, color: colors.textOnDarkMuted },
+  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 20 },
+  badge: {
+    width: '30.5%', alignItems: 'center', backgroundColor: colors.ink2,
+    borderRadius: radius.md, borderWidth: 1, borderColor: colors.hairline,
+    paddingVertical: 14, paddingHorizontal: 8,
+  },
+  badgeLocked: { opacity: 0.55 },
+  badgeIcon: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  badgeLabel: { fontFamily: fonts.bold, fontSize: 12, color: colors.textOnDark, marginTop: 8 },
+  badgeDesc: { fontFamily: fonts.medium, fontSize: 10, color: colors.textOnDarkFaint, marginTop: 3, textAlign: 'center' },
   list: { paddingHorizontal: 20, gap: 10 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.ink2, borderRadius: radius.md, padding: 12, borderWidth: 1, borderColor: colors.hairline },
   rank: { fontFamily: fonts.display, fontSize: 20, color: colors.red, width: 24 },
