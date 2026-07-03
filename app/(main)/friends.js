@@ -7,8 +7,17 @@ import * as Haptics from 'expo-haptics';
 import PixelAvatar from '../../components/PixelAvatar';
 import { PEOPLE } from '../../constants/people';
 import { useFollowing } from '../../lib/socialStore';
-import { fetchMyFollowing, searchProfiles, setFollowUser } from '../../lib/supabase';
+import { fetchActivityFeed, fetchMyFollowing, searchProfiles, setFollowUser, tintFor } from '../../lib/supabase';
+import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { colors, fonts, radius } from '../../constants/theme';
+
+function timeAgo(iso) {
+  const mins = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.round(hrs / 24)}d`;
+}
 
 export default function Friends() {
   const insets = useSafeAreaInsets();
@@ -17,11 +26,14 @@ export default function Friends() {
   const [query, setQuery] = useState('');
   const [realUsers, setRealUsers] = useState([]);
   const [realFollowing, setRealFollowing] = useState([]);
+  const [feed, setFeed] = useState([]);
   const searchSeq = useRef(0);
+  useUserSpots(); // keeps user-added spots resolvable in the feed
 
-  // who I actually follow on the backend
+  // who I actually follow on the backend + what they've been ranking
   useEffect(() => {
     fetchMyFollowing().then(setRealFollowing).catch(() => {});
+    fetchActivityFeed().then(setFeed).catch(() => {});
   }, []);
 
   const q = query.trim().toLowerCase();
@@ -91,19 +103,54 @@ export default function Friends() {
           </View>
         </View>
 
+        {!q && feed.length > 0 && (
+          <>
+            <Text style={styles.section}>FRIEND ACTIVITY</Text>
+            <View style={styles.list}>
+              {feed.slice(0, 12).map((f, i) => {
+                const spot = getAnySpot(f.spotId);
+                return (
+                  <Pressable
+                    key={`${f.userId}-${f.spotId}-${i}`}
+                    style={styles.row}
+                    onPress={() => router.push(spot ? `/spot/${f.spotId}` : `/user/${f.userId}`)}
+                  >
+                    <Pressable onPress={() => router.push(`/user/${f.userId}`)} hitSlop={6}>
+                      <PixelAvatar seed={f.username} size={40} tint={tintFor(f.username)} />
+                    </Pressable>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.name} numberOfLines={2}>
+                        <Text style={styles.feedUser}>@{f.username}</Text>
+                        <Text style={styles.feedVerb}> ranked </Text>
+                        {spot ? spot.name : f.spotId}
+                      </Text>
+                      <Text style={styles.handle}>{timeAgo(f.at)} ago</Text>
+                    </View>
+                    {f.score != null ? (
+                      <View style={styles.feedScore}>
+                        <Text style={styles.feedScoreTxt}>{Number(f.score).toFixed(1)}</Text>
+                      </View>
+                    ) : null}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </>
+        )}
+
         {realUsers.length > 0 && (
           <>
             <Text style={styles.section}>ON ADDA</Text>
             <View style={styles.list}>
               {realUsers.map((u) => (
-                <View key={u.id} style={styles.row}>
-                  <PixelAvatar seed={u.username} size={46} tint={colors.maroon} />
+                <Pressable key={u.id} style={styles.row} onPress={() => router.push(`/user/${u.id}`)}>
+                  <PixelAvatar seed={u.username} size={46} tint={tintFor(u.username)} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.name}>@{u.username}</Text>
                     <Text style={styles.handle}>Real person, on Adda</Text>
                   </View>
                   <FollowBtn following={realFollowing.includes(u.id)} onPress={() => onToggleReal(u.id)} />
-                </View>
+                </Pressable>
               ))}
             </View>
           </>
@@ -162,4 +209,8 @@ const styles = StyleSheet.create({
   followingBtn: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.hairline },
   followTxt: { fontFamily: fonts.label, fontSize: 12, letterSpacing: 1, color: '#fff', textTransform: 'uppercase' },
   followingTxt: { color: colors.textOnDark },
+  feedUser: { fontFamily: fonts.bold, color: colors.textOnDark },
+  feedVerb: { fontFamily: fonts.regular, color: colors.textOnDarkMuted },
+  feedScore: { backgroundColor: colors.red, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 5 },
+  feedScoreTxt: { fontFamily: fonts.extrabold, fontSize: 13, color: '#fff' },
 });

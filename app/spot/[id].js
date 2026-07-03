@@ -23,6 +23,7 @@ import { useRankings } from '../../lib/rankStore';
 import { useFollowing } from '../../lib/socialStore';
 import { useSaved } from '../../lib/savedStore';
 import { getAnySpot, useUserSpots } from '../../lib/userSpots';
+import { fetchFriendScoresForSpot, tintFor } from '../../lib/supabase';
 import { colors, fonts, radius } from '../../constants/theme';
 
 export default function SpotDetail() {
@@ -32,8 +33,15 @@ export default function SpotDetail() {
   const { scores, ordered } = useRankings();
   const { isFollowing } = useFollowing();
   const { isSaved, toggle } = useSaved();
+  const [friendScores, setFriendScores] = React.useState([]);
   useUserSpots(); // keeps user-added spots loaded for getAnySpot
   const saved = isSaved(id);
+
+  React.useEffect(() => {
+    let alive = true;
+    fetchFriendScoresForSpot(id).then((rows) => { if (alive) setFriendScores(rows); }).catch(() => {});
+    return () => { alive = false; };
+  }, [id]);
 
   const spot = getAnySpot(id);
   const myScore = scores?.[id];
@@ -131,6 +139,33 @@ export default function SpotDetail() {
             <QuickAction icon={saved ? 'heart' : 'heart-outline'} label={saved ? 'Saved' : 'Save'} onPress={toggleSave} />
           </View>
 
+          {/* real friends' scores */}
+          {friendScores.length > 0 ? (
+            <>
+              <View style={styles.sectionRow}>
+                <Text style={styles.section}>YOUR FRIENDS RANKED THIS</Text>
+                <Text style={styles.sectionCount}>{friendScores.length} of your people</Text>
+              </View>
+              {friendScores.map((f) => (
+                <Pressable key={f.userId} style={styles.review} onPress={() => router.push(`/user/${f.userId}`)}>
+                  <PixelAvatar seed={f.username} size={40} tint={tintFor(f.username)} />
+                  <View style={{ flex: 1 }}>
+                    <View style={styles.rvTop}>
+                      <Text style={styles.rvName}>@{f.username}</Text>
+                      <View style={styles.friendTag}><Text style={styles.friendTagTxt}>FRIEND</Text></View>
+                    </View>
+                    <Text style={styles.rvText}>
+                      {f.sentiment === 'liked' ? 'Loved it' : f.sentiment === 'fine' ? 'Thought it was fine' : 'Not their thing'}
+                    </Text>
+                  </View>
+                  {f.score != null ? (
+                    <View style={styles.fsScore}><Text style={styles.fsScoreTxt}>{Number(f.score).toFixed(1)}</Text></View>
+                  ) : null}
+                </Pressable>
+              ))}
+            </>
+          ) : null}
+
           {/* reviews */}
           <View style={styles.sectionRow}>
             <Text style={styles.section}>WHAT PEOPLE SAY</Text>
@@ -212,4 +247,6 @@ const styles = StyleSheet.create({
   rvText: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 21, color: colors.textOnDarkMuted, marginTop: 3 },
 
   rankBar: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 20, paddingTop: 14, backgroundColor: colors.ink, borderTopWidth: 1, borderTopColor: colors.hairline },
+  fsScore: { backgroundColor: colors.red, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 5 },
+  fsScoreTxt: { fontFamily: fonts.extrabold, fontSize: 13, color: '#fff' },
 });

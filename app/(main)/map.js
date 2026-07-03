@@ -23,6 +23,7 @@ import { EVENTS, EVENT_CATEGORY_LIST, getEventCategory } from '../../constants/e
 import { photoForSpot, photoForEvent } from '../../lib/photos';
 import { useUserSpots } from '../../lib/userSpots';
 import { touchStreak } from '../../lib/streakStore';
+import { fetchFriendMapLayer } from '../../lib/supabase';
 import { colors, fonts, radius } from '../../constants/theme';
 
 const CARD_W = 240;
@@ -51,14 +52,22 @@ export default function MapScreen() {
   const chips = isEvents ? EVENT_CATEGORY_LIST : CATEGORY_LIST;
 
   const { spots: userSpots } = useUserSpots();
+  const [friendLayer, setFriendLayer] = useState({});
 
-  React.useEffect(() => { touchStreak(); }, []);
+  React.useEffect(() => {
+    touchStreak();
+    fetchFriendMapLayer().then(setFriendLayer).catch(() => {});
+  }, []);
 
   const points = useMemo(() => {
     const allSpots = [...SPOTS, ...userSpots];
     let list = isEvents
       ? (active ? EVENTS.filter((e) => e.category === active) : EVENTS).map((e) => ({ ...e, _kind: 'event' }))
-      : (active ? allSpots.filter((s) => s.category === active) : allSpots).map((s) => ({ ...s, _kind: 'spot' }));
+      : (active ? allSpots.filter((s) => s.category === active) : allSpots).map((s) => ({
+          ...s,
+          _kind: 'spot',
+          friend: friendLayer[s.id] || s.friend, // real friends outrank seeded ones
+        }));
     // ignore punctuation so "baes" finds "Bae's Coffee"
     const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '');
     const q = norm(query.trim());
@@ -68,7 +77,7 @@ export default function MapScreen() {
       );
     }
     return list;
-  }, [mode, active, query, userSpots]);
+  }, [mode, active, query, userSpots, friendLayer]);
 
   // searching flies the camera to the best match
   React.useEffect(() => {
