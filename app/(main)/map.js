@@ -36,11 +36,12 @@ export default function MapScreen() {
   const [active, setActive] = useState(null);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(null);
-  // map style cycles: real streets -> satellite -> pixel satellite -> pixel world
+  // PixelEarth — real Vizag, pixelated — is THE Adda map and opens first.
+  // Cycle: pixel satellite -> real streets -> satellite -> retro pixel world.
   // (native maps don't exist on web, so web only offers the modes that work there)
   const MAP_MODES = Platform.OS === 'web'
     ? ['pixelearth', 'pixel']
-    : ['standard', 'hybrid', 'pixelearth', 'pixel'];
+    : ['pixelearth', 'standard', 'hybrid', 'pixel'];
   const MODE_ICON = { standard: 'map', hybrid: 'globe', pixelearth: 'planet', pixel: 'game-controller' };
   const [mapType, setMapType] = useState(MAP_MODES[0]);
   const mapRef = useRef(null);

@@ -5,6 +5,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   View,
@@ -91,6 +92,14 @@ export default function SpotDetail() {
     router.push(`/rank/${id}`);
   };
 
+  const share = () => {
+    try { Haptics.selectionAsync(); } catch {}
+    const score = myScore ?? spot.score;
+    Share.share({
+      message: `${spot.name} — ${spot.area}, Vizag.${score ? ` Ranked ${score.toFixed(1)}/10 on Adda.` : ''} Found on Adda, the social map of Vizag.`,
+    }).catch(() => {});
+  };
+
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={{ paddingBottom: 140 }} showsVerticalScrollIndicator={false}>
@@ -137,6 +146,7 @@ export default function SpotDetail() {
             <QuickAction icon="navigate" label="Directions" onPress={directions} />
             <QuickAction icon="car-sport" label="Ride there" onPress={ride} highlight />
             <QuickAction icon={saved ? 'heart' : 'heart-outline'} label={saved ? 'Saved' : 'Save'} onPress={toggleSave} />
+            <QuickAction icon="share-social" label="Share" onPress={share} />
           </View>
 
           {/* real friends' scores */}

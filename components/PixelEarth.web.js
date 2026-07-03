@@ -10,6 +10,8 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
+  runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
@@ -37,15 +39,46 @@ const TILE_RENDER = 512;
 const WORLD = GRID * TILE_RENDER;
 const MAX_SCALE = 5;
 
-const tileUrl = (x, y) =>
-  `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${TILE_Z}/${y}/${x}`;
+const tileUrl = (z, x, y) =>
+  `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
 
 const TILES = [];
 for (let ty = 0; ty < GRID; ty++) {
   for (let tx = 0; tx < GRID; tx++) {
-    TILES.push({ key: `${tx}-${ty}`, url: tileUrl(TILE_X0 + tx, TILE_Y0 + ty), x: tx * TILE_RENDER, y: ty * TILE_RENDER });
+    TILES.push({ key: `${tx}-${ty}`, url: tileUrl(TILE_Z, TILE_X0 + tx, TILE_Y0 + ty), x: tx * TILE_RENDER, y: ty * TILE_RENDER, size: TILE_RENDER });
   }
 }
+
+// z13 detail layer — lazy-loaded on first zoom-in; sharper but still pixel
+const DETAIL_GRID = GRID * 2;
+const DETAIL_RENDER = TILE_RENDER / 2;
+const DETAIL_TILES = [];
+for (let ty = 0; ty < DETAIL_GRID; ty++) {
+  for (let tx = 0; tx < DETAIL_GRID; tx++) {
+    DETAIL_TILES.push({
+      key: `d${tx}-${ty}`,
+      url: tileUrl(TILE_Z + 1, TILE_X0 * 2 + tx, TILE_Y0 * 2 + ty),
+      x: tx * DETAIL_RENDER,
+      y: ty * DETAIL_RENDER,
+      size: DETAIL_RENDER,
+    });
+  }
+}
+
+// time-of-day atmosphere over the real imagery
+function dayPhase() {
+  const h = new Date().getHours();
+  if (h >= 19 || h < 5) return 'night';
+  if (h >= 17) return 'dusk';
+  if (h < 7) return 'dawn';
+  return 'day';
+}
+const TINT = {
+  night: 'rgba(10,14,52,0.42)',
+  dusk: 'rgba(255,110,40,0.12)',
+  dawn: 'rgba(255,170,90,0.10)',
+  day: 'transparent',
+};
 
 const clampN = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
 function geoToWorld(lat, lng) {
@@ -134,6 +167,8 @@ function GeoMarker({ p, pos, selected, onPress, tx, ty, s }) {
 
 const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect, onOpen }, ref) {
   const [viewport, setViewport] = useState(null);
+  const [detail, setDetail] = useState(false);
+  const phase = useMemo(dayPhase, []);
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);
   const s = useSharedValue(1);
@@ -150,6 +185,15 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
     const min = Math.min(0, view - world * sc);
     return Math.max(min, Math.min(0, t));
   };
+
+  // first zoom past 1.6x pulls in the sharper z13 imagery (stays pixelated)
+  const enableDetail = () => setDetail(true);
+  useAnimatedReaction(
+    () => s.value > 1.6,
+    (zoomed, was) => {
+      if (zoomed && !was) runOnJS(enableDetail)();
+    }
+  );
 
   const flyTo = (wx, wy, targetS) => {
     if (!viewport) return;
@@ -263,10 +307,21 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
               <Image
                 key={t.key}
                 source={{ uri: t.url }}
-                style={[styles.tile, { left: t.x, top: t.y }]}
+                style={[styles.tile, { left: t.x, top: t.y, width: t.size, height: t.size }]}
               />
             ))}
+            {detail ? DETAIL_TILES.map((t) => (
+              <Image
+                key={t.key}
+                source={{ uri: t.url }}
+                style={[styles.tile, { left: t.x, top: t.y, width: t.size, height: t.size }]}
+              />
+            )) : null}
           </Animated.View>
+
+          {phase !== 'day' ? (
+            <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: TINT[phase] }]} />
+          ) : null}
 
           {spots.map((p) => (
             <GeoMarker
