@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import PixelAvatar from '../../components/PixelAvatar';
 import { PEOPLE } from '../../constants/people';
 import { useFollowing } from '../../lib/socialStore';
+import { fetchMyFollowing, searchProfiles, setFollowUser } from '../../lib/supabase';
 import { colors, fonts, radius } from '../../constants/theme';
 
 export default function Friends() {
@@ -14,8 +15,37 @@ export default function Friends() {
   const router = useRouter();
   const { isFollowing, toggle, count } = useFollowing();
   const [query, setQuery] = useState('');
+  const [realUsers, setRealUsers] = useState([]);
+  const [realFollowing, setRealFollowing] = useState([]);
+  const searchSeq = useRef(0);
+
+  // who I actually follow on the backend
+  useEffect(() => {
+    fetchMyFollowing().then(setRealFollowing).catch(() => {});
+  }, []);
 
   const q = query.trim().toLowerCase();
+
+  // search real Adda users as you type
+  useEffect(() => {
+    if (!q) { setRealUsers([]); return; }
+    const seq = ++searchSeq.current;
+    const t = setTimeout(() => {
+      searchProfiles(q).then((rows) => {
+        if (searchSeq.current === seq) setRealUsers(rows);
+      }).catch(() => {});
+    }, 250);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  const onToggleReal = async (id) => {
+    try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
+    const follow = !realFollowing.includes(id);
+    setRealFollowing((cur) => (follow ? [...cur, id] : cur.filter((x) => x !== id))); // optimistic
+    const ok = await setFollowUser(id, follow);
+    if (!ok) setRealFollowing((cur) => (follow ? cur.filter((x) => x !== id) : [...cur, id]));
+  };
+
   const filtered = useMemo(
     () => PEOPLE.filter((p) => !q || p.username.includes(q) || p.name.toLowerCase().includes(q)),
     [q]
@@ -60,6 +90,24 @@ export default function Friends() {
             />
           </View>
         </View>
+
+        {realUsers.length > 0 && (
+          <>
+            <Text style={styles.section}>ON ADDA</Text>
+            <View style={styles.list}>
+              {realUsers.map((u) => (
+                <View key={u.id} style={styles.row}>
+                  <PixelAvatar seed={u.username} size={46} tint={colors.maroon} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.name}>@{u.username}</Text>
+                    <Text style={styles.handle}>Real person, on Adda</Text>
+                  </View>
+                  <FollowBtn following={realFollowing.includes(u.id)} onPress={() => onToggleReal(u.id)} />
+                </View>
+              ))}
+            </View>
+          </>
+        )}
 
         {following.length > 0 && (
           <>

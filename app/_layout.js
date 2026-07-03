@@ -58,6 +58,7 @@ export default function RootLayout() {
         <Stack.Screen name="onboarding/index" />
         <Stack.Screen name="onboarding/tour" />
         <Stack.Screen name="onboarding/location" />
+        <Stack.Screen name="onboarding/signin" />
         <Stack.Screen name="onboarding/username" />
         <Stack.Screen name="(main)" options={{ animation: 'fade' }} />
         <Stack.Screen name="spot/[id]" options={{ animation: 'slide_from_bottom' }} />

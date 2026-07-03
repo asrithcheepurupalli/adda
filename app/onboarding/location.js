@@ -44,10 +44,10 @@ export default function LocationPrime() {
     } catch {}
     await AsyncStorage.setItem(STORAGE.locationAsked, 'true').catch(() => {});
     setBusy(false);
-    router.push('/onboarding/username');
+    router.push('/onboarding/signin');
   };
 
-  const later = () => router.push('/onboarding/username');
+  const later = () => router.push('/onboarding/signin');
 
   return (
     <View style={styles.root}>

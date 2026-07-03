@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddaButton from '../../components/AddaButton';
+import { claimProfile } from '../../lib/supabase';
 import { colors, fonts, radius, STORAGE } from '../../constants/theme';
 
 const clean = (s) => s.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20);
@@ -24,6 +25,8 @@ export default function Username() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [value, setValue] = useState('');
+  const [taken, setTaken] = useState(false);
+  const [busy, setBusy] = useState(false);
   const shake = useRef(new Animated.Value(0)).current;
 
   const valid = value.length >= 3;
@@ -31,18 +34,32 @@ export default function Username() {
   const onChange = (t) => {
     const c = clean(t);
     if (c !== value) { try { Haptics.selectionAsync(); } catch {} }
+    setTaken(false);
     setValue(c);
   };
 
+  const doShake = () => {
+    Animated.sequence([
+      Animated.timing(shake, { toValue: 1, duration: 60, useNativeDriver: true }),
+      Animated.timing(shake, { toValue: -1, duration: 60, useNativeDriver: true }),
+      Animated.timing(shake, { toValue: 0, duration: 60, useNativeDriver: true }),
+    ]).start();
+    try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error); } catch {}
+  };
+
   const finish = async () => {
-    if (!valid) {
-      Animated.sequence([
-        Animated.timing(shake, { toValue: 1, duration: 60, useNativeDriver: true }),
-        Animated.timing(shake, { toValue: -1, duration: 60, useNativeDriver: true }),
-        Animated.timing(shake, { toValue: 0, duration: 60, useNativeDriver: true }),
-      ]).start();
-      try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error); } catch {}
-      return;
+    if (!valid || busy) return doShake();
+    setBusy(true);
+    try {
+      // claim it server-side when signed in; offline users continue locally
+      await claimProfile(value);
+    } catch (e) {
+      setBusy(false);
+      if (e?.code === 'taken') {
+        setTaken(true);
+        return doShake();
+      }
+      // network hiccup — don't block onboarding, sync happens next launch
     }
     try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); } catch {}
     await AsyncStorage.multiSet([
@@ -89,8 +106,10 @@ export default function Username() {
           {valid && <Ionicons name="checkmark-circle" size={22} color="#2E9E6B" />}
         </Animated.View>
 
-        <Text style={styles.hint}>
-          {value.length === 0
+        <Text style={[styles.hint, taken && styles.hintTaken]}>
+          {taken
+            ? `@${value} is taken — try another.`
+            : value.length === 0
             ? 'Letters, numbers and underscores. At least 3 characters.'
             : valid
             ? `Nice. You’ll be @${value}.`
@@ -122,5 +141,6 @@ const styles = StyleSheet.create({
   at: { fontFamily: fonts.extrabold, fontSize: 24, color: colors.red },
   input: { flex: 1, fontFamily: fonts.bold, fontSize: 22, color: colors.textOnDark, padding: 0 },
   hint: { fontFamily: fonts.medium, fontSize: 13, color: colors.textOnDarkFaint, marginTop: 12 },
+  hintTaken: { color: '#E5636E' },
   bottom: { gap: 4 },
 });

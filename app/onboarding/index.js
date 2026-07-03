@@ -68,7 +68,7 @@ export default function Welcome() {
         <AddaButton
           label="I already have an account"
           variant="ghost"
-          onPress={() => router.push('/onboarding/username')}
+          onPress={() => router.push('/onboarding/signin')}
           style={{ marginTop: 6 }}
         />
       </Animated.View>
