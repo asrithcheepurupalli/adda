@@ -1,0 +1,65 @@
+<!-- Adda sign-in code email — paste into Supabase: Authentication -> Emails -> "Magic link or OTP" body.
+     Table-based + inline styles so Gmail/Outlook/Apple Mail all render it. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#120F0E; margin:0; padding:0;">
+  <tr>
+    <td align="center" style="padding: 40px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 480px;">
+
+        <!-- wordmark -->
+        <tr>
+          <td align="center" style="padding-bottom: 8px;">
+            <span style="font-family: 'Anton', 'Arial Narrow', 'Franklin Gothic Bold', Impact, sans-serif; font-size: 54px; line-height: 1; letter-spacing: 2px; color: #BC2130; text-transform: uppercase;">ADDA</span>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding-bottom: 36px;">
+            <span style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 4px; color: #B7ABA0; text-transform: uppercase;">find your spots</span>
+          </td>
+        </tr>
+
+        <!-- card -->
+        <tr>
+          <td style="background-color: #1B1615; border: 1px solid #2E2724; border-radius: 16px; padding: 36px 28px;" align="center">
+            <span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: 3px; color: #BC2130; text-transform: uppercase; font-weight: bold;">Your sign-in code</span>
+
+            <!-- the code -->
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 22px auto 0;">
+              <tr>
+                <td style="background-color: #120F0E; border: 2px solid #BC2130; border-radius: 12px; padding: 18px 28px;" align="center">
+                  <span style="font-family: 'Courier New', Courier, monospace; font-size: 40px; font-weight: bold; letter-spacing: 10px; color: #FBF6EE;">{{ .Token }}</span>
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 22px; color: #B7ABA0; margin: 26px 0 0;">
+              Type this code in the app to enter Adda.<br>
+              It expires in <span style="color: #FBF6EE; font-weight: bold;">1 hour</span>.
+            </p>
+          </td>
+        </tr>
+
+        <!-- safety note -->
+        <tr>
+          <td align="center" style="padding-top: 26px;">
+            <p style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 19px; color: #8C8178; margin: 0;">
+              Didn't ask for this? Ignore this email — nobody can sign in without the code.
+            </p>
+          </td>
+        </tr>
+
+        <!-- footer -->
+        <tr>
+          <td align="center" style="padding-top: 34px; border-top: 1px solid #2E2724; margin-top: 30px;">
+            <p style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 2px; color: #6B6259; text-transform: uppercase; margin: 30px 0 6px;">
+              adda &middot; the social map of Vizag
+            </p>
+            <p style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #4E463F; margin: 0;">
+              Visakhapatnam, India
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>

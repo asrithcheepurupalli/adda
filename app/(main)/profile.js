@@ -16,11 +16,13 @@ import { useSaved, resetSaved } from '../../lib/savedStore';
 import { resetUserSpots } from '../../lib/userSpots';
 import { useStreak, resetStreak } from '../../lib/streakStore';
 import { computeBadges } from '../../lib/badges';
+import { getSession, supabase } from '../../lib/supabase';
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [name, setName] = useState('friend');
+  const [email, setEmail] = useState(null);
   const { count: userSpotCount } = useUserSpots(); // also keeps user spots resolvable
   const { ordered, total } = useRankings();
   const { ids: following, count: followCount } = useFollowing();
@@ -40,7 +42,14 @@ export default function Profile() {
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE.username).then((v) => v && setName(v)).catch(() => {});
+    getSession().then((s) => setEmail(s?.user?.email || null)).catch(() => {});
   }, []);
+
+  const signOut = async () => {
+    try { await supabase.auth.signOut(); } catch {}
+    await AsyncStorage.removeItem(STORAGE.onboarded).catch(() => {});
+    router.replace('/onboarding');
+  };
 
   const reset = async () => {
     await resetRankings();
@@ -64,7 +73,9 @@ export default function Profile() {
         <View style={styles.header}>
           <PixelAvatar seed={name} size={88} tint={colors.maroon} style={{ borderColor: colors.red, borderWidth: 3 }} />
           <Text style={styles.name}>@{name}</Text>
-          <Text style={styles.tagline}>Exploring Vizag, one adda at a time.</Text>
+          <Text style={styles.tagline}>
+            {email ? `Signed in as ${email}` : 'Exploring Vizag, one adda at a time.'}
+          </Text>
 
           <View style={styles.stats}>
             <Stat n={String(total)} l="ranked" />
@@ -149,6 +160,12 @@ export default function Profile() {
           </View>
         )}
 
+        {email ? (
+          <Pressable onPress={signOut} style={styles.reset} hitSlop={10}>
+            <Ionicons name="log-out-outline" size={16} color={colors.textOnDarkMuted} />
+            <Text style={[styles.resetTxt, { color: colors.textOnDarkMuted }]}>Sign out</Text>
+          </Pressable>
+        ) : null}
         <Pressable onPress={reset} style={styles.reset} hitSlop={10}>
           <Ionicons name="refresh" size={16} color={colors.textOnDarkFaint} />
           <Text style={styles.resetTxt}>Reset & replay onboarding</Text>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -20,6 +20,15 @@ export default function EventDetail() {
   const { isGoing, toggle } = useGoing();
 
   const event = getEvent(id);
+
+  const share = () => {
+    if (!event) return;
+    try { Haptics.selectionAsync(); } catch {}
+    Share.share({
+      message: `${event.title} — ${event.day} ${event.time} at ${event.venue}, Vizag. I found it on Adda, the social map of Vizag.`,
+    }).catch(() => {});
+  };
+
   if (!event) {
     return (
       <View style={[styles.root, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -93,7 +102,7 @@ export default function EventDetail() {
           <View style={styles.quick}>
             <QuickAction icon="navigate" label="Directions" onPress={directions} />
             <QuickAction icon="car-sport" label="Ride there" onPress={ride} highlight />
-            <QuickAction icon="share-social" label="Share" onPress={() => {}} />
+            <QuickAction icon="share-social" label="Share" onPress={share} />
           </View>
 
           <Text style={styles.section}>WHO'S GOING</Text>
