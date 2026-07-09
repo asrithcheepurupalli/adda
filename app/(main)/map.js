@@ -25,7 +25,7 @@ import { photoForSpot, photoForEvent } from '../../lib/photos';
 import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { touchStreak } from '../../lib/streakStore';
 import { useCheckins } from '../../lib/checkinStore';
-import { fetchFriendCheckins, fetchFriendMapLayer } from '../../lib/supabase';
+import { fetchCharacters, fetchFriendCheckins, fetchFriendMapLayer } from '../../lib/supabase';
 import { colors, fonts, radius } from '../../constants/theme';
 
 const CARD_W = 240;
@@ -60,10 +60,41 @@ export default function MapScreen() {
   const [friendCheckins, setFriendCheckins] = useState([]);
   const { list: myCheckins } = useCheckins();
 
+  const [presence, setPresence] = useState([]);
+
   React.useEffect(() => {
     touchStreak();
     fetchFriendMapLayer().then(setFriendLayer).catch(() => {});
-    fetchFriendCheckins().then(setFriendCheckins).catch(() => {});
+    (async () => {
+      try {
+        const checks = await fetchFriendCheckins();
+        setFriendCheckins(checks);
+        // presence: each friend's freshest check-in from the last 24h
+        const byUser = {};
+        for (const c of checks) if (!byUser[c.userId]) byUser[c.userId] = c;
+        const fresh = Object.values(byUser).filter(
+          (c) => Date.now() - new Date(c.at).getTime() < 24 * 3600 * 1000
+        );
+        const chars = await fetchCharacters(fresh.map((c) => c.userId));
+        setPresence(
+          fresh
+            .map((c) => {
+              const spot = getAnySpot(c.spotId);
+              if (!spot) return null;
+              return {
+                userId: c.userId,
+                username: c.username,
+                spotId: c.spotId,
+                lat: spot.lat,
+                lng: spot.lng,
+                at: c.at,
+                character: chars[c.userId]?.character || null,
+              };
+            })
+            .filter(Boolean)
+        );
+      } catch {}
+    })();
   }, []);
 
   // photo drops: my snaps + friends' snaps hanging at their spots
@@ -163,6 +194,8 @@ export default function MapScreen() {
           onSelect={selectFromPin}
           onOpen={open}
           drops={drops}
+          friends={presence}
+          onOpenFriend={(userId) => router.push(`/user/${userId}`)}
         />
       ) : (
         <CityMap

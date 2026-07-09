@@ -35,7 +35,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
-import PixelCharacter from './PixelCharacter';
+import PixelCharacter, { characterFromSeed } from './PixelCharacter';
 import { useCharacter } from '../lib/characterStore';
 import { CELL, revealAt, useExplore } from '../lib/exploreStore';
 import { getCategory } from '../constants/spots';
@@ -225,6 +225,35 @@ function PhotoDrop({ d, pos, onPress, tx, ty, s }) {
   );
 }
 
+// a friend standing where they last checked in
+function FriendMarker({ f, pos, onPress, tx, ty, s }) {
+  const st = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: tx.value + s.value * pos.x - 44 },
+      { translateY: ty.value + s.value * pos.y - 50 },
+    ],
+  }));
+  const config = f.character || characterFromSeed(f.username);
+  return (
+    <Animated.View style={[styles.marker, { zIndex: 8 }, st]}>
+      <Pressable onPress={() => onPress(f.userId)} hitSlop={8} style={styles.friendWrap}>
+        <PixelCharacter config={config} scale={2} />
+        <View style={styles.friendTag}>
+          <Text style={styles.friendTagTxt} numberOfLines={1}>@{f.username} · {timeAgo(f.at)}</Text>
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+function timeAgo(iso) {
+  const mins = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.round(hrs / 24)}d`;
+}
+
 function YouMarker({ pos, tx, ty, s }) {
   const character = useCharacter('you');
   const st = useAnimatedStyle(() => ({
@@ -246,7 +275,10 @@ function YouMarker({ pos, tx, ty, s }) {
   );
 }
 
-const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect, onOpen, drops = [] }, ref) {
+const PixelEarth = forwardRef(function PixelEarth(
+  { spots, selectedId, onSelect, onOpen, drops = [], friends = [], onOpenFriend },
+  ref
+) {
   const [viewport, setViewport] = useState(null);
   const [userWorld, setUserWorld] = useState(null);
   const [detail, setDetail] = useState(false);
@@ -459,6 +491,17 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
           {dropItems.map((d) => (
             <PhotoDrop key={d.id} d={d} pos={d.pos} onPress={openDrop} tx={tx} ty={ty} s={s} />
           ))}
+          {friends.map((f) => (
+            <FriendMarker
+              key={f.userId}
+              f={f}
+              pos={geoToWorld(f.lat, f.lng)}
+              onPress={onOpenFriend || (() => {})}
+              tx={tx}
+              ty={ty}
+              s={s}
+            />
+          ))}
           {spots.map((p) => (
             <GeoMarker
               key={p.id}
@@ -528,6 +571,13 @@ const styles = StyleSheet.create({
   dropImg: { width: 40, height: 40, borderRadius: 2, backgroundColor: '#2A2320' },
   dropWho: { fontFamily: fonts.bold, fontSize: 7.5, color: '#1C1815', marginTop: 1, textAlign: 'center' },
   dropPin: { alignSelf: 'center', width: 2.5, height: 10, backgroundColor: 'rgba(255,255,255,0.85)' },
+
+  friendWrap: { alignItems: 'center' },
+  friendTag: {
+    marginTop: 2, backgroundColor: colors.ink, borderRadius: 4, paddingHorizontal: 5, paddingVertical: 2,
+    borderWidth: 1, borderColor: '#fff', maxWidth: 92,
+  },
+  friendTagTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 8 },
 
   youWrap: { alignItems: 'center' },
   youRing: {

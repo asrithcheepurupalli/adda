@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,7 +7,7 @@ import * as Haptics from 'expo-haptics';
 import PixelAvatar from '../../components/PixelAvatar';
 import { PEOPLE } from '../../constants/people';
 import { useFollowing } from '../../lib/socialStore';
-import { fetchActivityFeed, fetchMyFollowing, searchProfiles, setFollowUser, tintFor } from '../../lib/supabase';
+import { fetchActivityFeed, fetchFriendCheckins, fetchMyFollowing, searchProfiles, setFollowUser, tintFor } from '../../lib/supabase';
 import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { colors, fonts, radius } from '../../constants/theme';
 
@@ -33,7 +33,15 @@ export default function Friends() {
   // who I actually follow on the backend + what they've been ranking
   useEffect(() => {
     fetchMyFollowing().then(setRealFollowing).catch(() => {});
-    fetchActivityFeed().then(setFeed).catch(() => {});
+    Promise.all([fetchActivityFeed(), fetchFriendCheckins(30)])
+      .then(([ranks, checks]) => {
+        const merged = [
+          ...ranks.map((r) => ({ ...r, type: 'rank' })),
+          ...checks.map((c) => ({ ...c, type: 'checkin' })),
+        ].sort((a, b) => new Date(b.at) - new Date(a.at));
+        setFeed(merged);
+      })
+      .catch(() => {});
   }, []);
 
   const q = query.trim().toLowerCase();
@@ -121,12 +129,14 @@ export default function Friends() {
                     <View style={{ flex: 1 }}>
                       <Text style={styles.name} numberOfLines={2}>
                         <Text style={styles.feedUser}>@{f.username}</Text>
-                        <Text style={styles.feedVerb}> ranked </Text>
+                        <Text style={styles.feedVerb}>{f.type === 'checkin' ? ' checked in at ' : ' ranked '}</Text>
                         {spot ? spot.name : f.spotId}
                       </Text>
-                      <Text style={styles.handle}>{timeAgo(f.at)} ago</Text>
+                      <Text style={styles.handle}>{timeAgo(f.at)} ago{f.type === 'checkin' && f.verified ? ' · verified' : ''}</Text>
                     </View>
-                    {f.score != null ? (
+                    {f.type === 'checkin' && f.photoUrl ? (
+                      <Image source={{ uri: f.photoUrl }} style={styles.feedThumb} />
+                    ) : f.score != null ? (
                       <View style={styles.feedScore}>
                         <Text style={styles.feedScoreTxt}>{Number(f.score).toFixed(1)}</Text>
                       </View>
@@ -212,5 +222,6 @@ const styles = StyleSheet.create({
   feedUser: { fontFamily: fonts.bold, color: colors.textOnDark },
   feedVerb: { fontFamily: fonts.regular, color: colors.textOnDarkMuted },
   feedScore: { backgroundColor: colors.red, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 5 },
+  feedThumb: { width: 42, height: 42, borderRadius: 6, backgroundColor: colors.ink3, borderWidth: 2, borderColor: '#fff' },
   feedScoreTxt: { fontFamily: fonts.extrabold, fontSize: 13, color: '#fff' },
 });
