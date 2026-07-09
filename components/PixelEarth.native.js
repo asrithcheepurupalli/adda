@@ -23,10 +23,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import {
   Canvas,
+  FillType,
   FilterMode,
   Group,
   Image as SkiaImage,
   MipmapMode,
+  Path,
+  Skia,
   useImage,
 } from '@shopify/react-native-skia';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,6 +37,7 @@ import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
 import PixelCharacter from './PixelCharacter';
 import { useCharacter } from '../lib/characterStore';
+import { CELL, revealAt, useExplore } from '../lib/exploreStore';
 import { getCategory } from '../constants/spots';
 import { getEventCategory } from '../constants/events';
 import { colors, fonts } from '../constants/theme';
@@ -268,12 +272,30 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
         const loc = last || (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
         if (alive && loc) {
           const w = geoToWorld(loc.coords.latitude, loc.coords.longitude);
-          if (inWorld(w)) setUserWorld(w);
+          if (inWorld(w)) {
+            setUserWorld(w);
+            // being here clears the fog here
+            revealAt(loc.coords.latitude, loc.coords.longitude, 1);
+          }
         }
       } catch {}
     })();
     return () => { alive = false; };
   }, []);
+
+  // fog of war: dark everywhere you haven't been, holes where you have
+  const { cells: exploredCells, corePercent } = useExplore();
+  const [fogOn, setFogOn] = useState(true);
+  const fogPath = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.addRect({ x: 0, y: 0, width: WORLD, height: WORLD });
+    for (const k of exploredCells) {
+      const [cx, cy] = k.split(',').map(Number);
+      p.addRect({ x: cx * CELL, y: cy * CELL, width: CELL, height: CELL });
+    }
+    p.setFillType(FillType.EvenOdd);
+    return p;
+  }, [exploredCells.size]);
 
   const clampT = (t, sc, view, world) => {
     'worklet';
@@ -425,6 +447,7 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
                 <Tile key={t.key} {...t} />
               ))}
               {detail ? DETAIL_TILES.map((t) => <Tile key={t.key} {...t} />) : null}
+              {fogOn ? <Path path={fogPath} color="rgba(7,9,18,0.82)" /> : null}
             </Group>
           </Canvas>
 
@@ -450,6 +473,17 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
           ))}
         </View>
       </GestureDetector>
+
+      <Pressable
+        style={styles.explorePill}
+        onPress={() => {
+          try { Haptics.selectionAsync(); } catch {}
+          setFogOn((f) => !f);
+        }}
+      >
+        <Ionicons name={fogOn ? 'footsteps' : 'eye'} size={13} color={colors.cream} />
+        <Text style={styles.explorePillTxt}>{corePercent}% explored</Text>
+      </Pressable>
 
       <View style={styles.attribution} pointerEvents="none">
         <Text style={styles.attributionTxt}>Imagery © Esri</Text>
@@ -506,6 +540,12 @@ const styles = StyleSheet.create({
   },
   nameTxt: { color: '#fff', fontFamily: fonts.bold, fontSize: 9 },
 
+  explorePill: {
+    position: 'absolute', left: 8, bottom: 18, flexDirection: 'row', alignItems: 'center', gap: 5,
+    backgroundColor: 'rgba(18,15,14,0.82)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)',
+  },
+  explorePillTxt: { fontFamily: fonts.bold, fontSize: 11, color: colors.cream },
   attribution: {
     position: 'absolute', left: 8, bottom: 4, backgroundColor: 'rgba(0,0,0,0.35)',
     borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1,

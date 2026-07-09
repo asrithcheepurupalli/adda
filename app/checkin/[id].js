@@ -20,6 +20,7 @@ import AddaButton from '../../components/AddaButton';
 import { getCategory } from '../../constants/spots';
 import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { addCheckin } from '../../lib/checkinStore';
+import { revealAt } from '../../lib/exploreStore';
 import { colors, fonts, radius } from '../../constants/theme';
 
 const NEARBY_M = 400;
@@ -97,6 +98,7 @@ export default function CheckinScreen() {
     if (saving) return;
     setSaving(true);
     await addCheckin({ spotId: id, note, photoUri, verified: nearby === true });
+    if (nearby === true) revealAt(spot.lat, spot.lng, 2); // being there clears the fog
     try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); } catch {}
     router.back();
   };

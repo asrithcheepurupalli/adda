@@ -18,6 +18,7 @@ import { useSaved, resetSaved } from '../../lib/savedStore';
 import { resetUserSpots } from '../../lib/userSpots';
 import { useStreak, resetStreak } from '../../lib/streakStore';
 import { useCheckins, resetCheckins } from '../../lib/checkinStore';
+import { useExplore, resetExplore } from '../../lib/exploreStore';
 import { computeBadges } from '../../lib/badges';
 import { getSession, supabase } from '../../lib/supabase';
 
@@ -34,6 +35,7 @@ export default function Profile() {
   const streak = useStreak();
   const { count: checkinCount, photoCount } = useCheckins();
   const character = useCharacter(name);
+  const explore = useExplore();
 
   const badges = computeBadges({
     rankedCount: total,
@@ -44,6 +46,7 @@ export default function Profile() {
     bestStreak: streak.best,
     checkinCount,
     photoCount,
+    explorePercent: explore.corePercent,
   });
   const earnedCount = badges.filter((b) => b.earned).length;
 
@@ -66,6 +69,7 @@ export default function Profile() {
     await resetUserSpots();
     await resetStreak();
     await resetCheckins();
+    await resetExplore();
     await AsyncStorage.multiRemove([STORAGE.onboarded, STORAGE.username, STORAGE.locationAsked]).catch(() => {});
     router.replace('/onboarding');
   };
@@ -118,6 +122,21 @@ export default function Profile() {
               <Text style={styles.findFriendsTxt}>Find friends to follow</Text>
             </Pressable>
           )}
+        </View>
+
+        <Text style={styles.section}>EXPLORATION</Text>
+        <View style={styles.exploreCard}>
+          <View style={styles.exploreTop}>
+            <Ionicons name="footsteps" size={18} color={colors.cream} />
+            <Text style={styles.explorePct}>{explore.corePercent}%</Text>
+            <Text style={styles.exploreLbl}>of the city core</Text>
+          </View>
+          <View style={styles.exploreBarBg}>
+            <View style={[styles.exploreBarFill, { width: `${explore.corePercent}%` }]} />
+          </View>
+          <Text style={styles.exploreSub}>
+            {explore.count} block{explore.count === 1 ? '' : 's'} of Vizag uncovered — the map clears where you go
+          </Text>
         </View>
 
         <View style={styles.sectionRow}>
@@ -253,6 +272,16 @@ const styles = StyleSheet.create({
   emptyBtnTxt: { fontFamily: fonts.label, fontSize: 13, letterSpacing: 1, color: '#fff', textTransform: 'uppercase' },
   reset: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 30 },
   charStage: { alignItems: 'center' },
+  exploreCard: {
+    marginHorizontal: 20, backgroundColor: colors.ink2, borderRadius: 18,
+    borderWidth: 1, borderColor: colors.hairline, padding: 16,
+  },
+  exploreTop: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
+  explorePct: { fontFamily: fonts.extrabold, fontSize: 26, color: colors.textOnDark },
+  exploreLbl: { fontFamily: fonts.medium, fontSize: 13, color: colors.textOnDarkMuted },
+  exploreBarBg: { height: 8, borderRadius: 4, backgroundColor: colors.ink3, marginTop: 12, overflow: 'hidden' },
+  exploreBarFill: { height: 8, borderRadius: 4, backgroundColor: colors.red },
+  exploreSub: { fontFamily: fonts.regular, fontSize: 12.5, color: colors.textOnDarkFaint, marginTop: 10 },
   editLook: {
     flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8,
     backgroundColor: colors.red, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5,
