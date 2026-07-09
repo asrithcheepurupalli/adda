@@ -21,9 +21,10 @@ import PixelAvatar from '../../components/PixelAvatar';
 import { CATEGORY_LIST, SPOTS, getCategory } from '../../constants/spots';
 import { EVENTS, EVENT_CATEGORY_LIST, getEventCategory } from '../../constants/events';
 import { photoForSpot, photoForEvent } from '../../lib/photos';
-import { useUserSpots } from '../../lib/userSpots';
+import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { touchStreak } from '../../lib/streakStore';
-import { fetchFriendMapLayer } from '../../lib/supabase';
+import { useCheckins } from '../../lib/checkinStore';
+import { fetchFriendCheckins, fetchFriendMapLayer } from '../../lib/supabase';
 import { colors, fonts, radius } from '../../constants/theme';
 
 const CARD_W = 240;
@@ -54,11 +55,29 @@ export default function MapScreen() {
 
   const { spots: userSpots } = useUserSpots();
   const [friendLayer, setFriendLayer] = useState({});
+  const [friendCheckins, setFriendCheckins] = useState([]);
+  const { list: myCheckins } = useCheckins();
 
   React.useEffect(() => {
     touchStreak();
     fetchFriendMapLayer().then(setFriendLayer).catch(() => {});
+    fetchFriendCheckins().then(setFriendCheckins).catch(() => {});
   }, []);
+
+  // photo drops: my snaps + friends' snaps hanging at their spots
+  const drops = useMemo(() => {
+    const seen = new Set();
+    const out = [];
+    const push = (id, spotId, uri, who) => {
+      const spot = getAnySpot(spotId);
+      if (!spot || !uri || seen.has(id)) return;
+      seen.add(id);
+      out.push({ id, spotId, uri, who, lat: spot.lat, lng: spot.lng });
+    };
+    for (const c of myCheckins) push(c.id, c.spotId, c.photoUri, 'you');
+    for (const c of friendCheckins) push(c.id, c.spotId, c.photoUrl, `@${c.username}`);
+    return out.slice(0, 20);
+  }, [myCheckins, friendCheckins, userSpots]);
 
   const points = useMemo(() => {
     const allSpots = [...SPOTS, ...userSpots];
@@ -141,6 +160,7 @@ export default function MapScreen() {
           selectedId={selectedId}
           onSelect={selectFromPin}
           onOpen={open}
+          drops={drops}
         />
       ) : (
         <CityMap

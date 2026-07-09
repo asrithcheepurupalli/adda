@@ -42,6 +42,13 @@
         {
           "locationWhenInUsePermission": "Adda uses your location to show the best spots, events and friend recommendations near you."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Adda lets you attach photos from your library to your check-ins.",
+          "cameraPermission": "Adda lets you snap a photo when you check in at a spot."
+        }
       ]
     ]
   }

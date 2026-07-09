@@ -165,7 +165,30 @@ function GeoMarker({ p, pos, selected, onPress, tx, ty, s }) {
   );
 }
 
-const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect, onOpen }, ref) {
+// a check-in photo hanging on the map, polaroid-style
+function PhotoDrop({ d, pos, onPress, tx, ty, s }) {
+  const rot = ((d.id.charCodeAt(2) + d.id.charCodeAt(d.id.length - 1)) % 9) - 4;
+  const st = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: tx.value + s.value * pos.x - 23 },
+      { translateY: ty.value + s.value * pos.y - 62 },
+      { rotate: `${rot}deg` },
+    ],
+  }));
+  return (
+    <Animated.View style={[styles.marker, { zIndex: 6 }, st]}>
+      <Pressable onPress={() => onPress(d)} hitSlop={6}>
+        <View style={styles.drop}>
+          <Image source={{ uri: d.uri }} style={styles.dropImg} />
+          <Text style={styles.dropWho} numberOfLines={1}>{d.who}</Text>
+        </View>
+        <View style={styles.dropPin} />
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect, onOpen, drops = [] }, ref) {
   const [viewport, setViewport] = useState(null);
   const [detail, setDetail] = useState(false);
   const phase = useMemo(dayPhase, []);
@@ -298,6 +321,25 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
     else onSelect(p);
   };
 
+  // photo drops hang next to their spot; stacked drops fan out slightly
+  const dropItems = useMemo(() => {
+    const perSpot = {};
+    return drops
+      .filter((d) => d.lat != null && d.lng != null)
+      .slice(0, 20)
+      .map((d) => {
+        const n = (perSpot[d.spotId] = (perSpot[d.spotId] ?? -1) + 1);
+        const w = geoToWorld(d.lat, d.lng);
+        return { ...d, pos: { x: w.x + 26 + n * 14, y: w.y - 6 - n * 10 } };
+      });
+  }, [drops]);
+
+  const openDrop = (d) => {
+    try { Haptics.selectionAsync(); } catch {}
+    const p = spots.find((x) => x.id === d.spotId);
+    if (p) onOpen(p);
+  };
+
   return (
     <View style={styles.root} onLayout={onLayout}>
       <GestureDetector gesture={gesture}>
@@ -323,6 +365,9 @@ const PixelEarth = forwardRef(function PixelEarth({ spots, selectedId, onSelect,
             <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: TINT[phase] }]} />
           ) : null}
 
+          {dropItems.map((d) => (
+            <PhotoDrop key={d.id} d={d} pos={d.pos} onPress={openDrop} tx={tx} ty={ty} s={s} />
+          ))}
           {spots.map((p) => (
             <GeoMarker
               key={p.id}
@@ -357,6 +402,14 @@ const styles = StyleSheet.create({
     height: WORLD,
     transformOrigin: 'top left',
   },
+  drop: {
+    width: 46, backgroundColor: '#fff', borderRadius: 4, padding: 3, paddingBottom: 2,
+    shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 5,
+  },
+  dropImg: { width: 40, height: 40, borderRadius: 2, backgroundColor: '#2A2320' },
+  dropWho: { fontFamily: fonts.bold, fontSize: 7.5, color: '#1C1815', marginTop: 1, textAlign: 'center' },
+  dropPin: { alignSelf: 'center', width: 2.5, height: 10, backgroundColor: 'rgba(255,255,255,0.85)' },
+
   tile: {
     position: 'absolute',
     width: TILE_RENDER,

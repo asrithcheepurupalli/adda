@@ -24,7 +24,8 @@ import { useRankings } from '../../lib/rankStore';
 import { useFollowing } from '../../lib/socialStore';
 import { useSaved } from '../../lib/savedStore';
 import { getAnySpot, useUserSpots } from '../../lib/userSpots';
-import { fetchFriendScoresForSpot, tintFor } from '../../lib/supabase';
+import { useCheckins } from '../../lib/checkinStore';
+import { fetchFriendScoresForSpot, fetchSpotPhotos, tintFor } from '../../lib/supabase';
 import { colors, fonts, radius } from '../../constants/theme';
 
 export default function SpotDetail() {
@@ -35,14 +36,25 @@ export default function SpotDetail() {
   const { isFollowing } = useFollowing();
   const { isSaved, toggle } = useSaved();
   const [friendScores, setFriendScores] = React.useState([]);
+  const [wallPhotos, setWallPhotos] = React.useState([]);
+  const { forSpot } = useCheckins();
   useUserSpots(); // keeps user-added spots loaded for getAnySpot
   const saved = isSaved(id);
+  const myCheckins = forSpot(id);
 
   React.useEffect(() => {
     let alive = true;
     fetchFriendScoresForSpot(id).then((rows) => { if (alive) setFriendScores(rows); }).catch(() => {});
+    fetchSpotPhotos(id).then((rows) => { if (alive) setWallPhotos(rows); }).catch(() => {});
     return () => { alive = false; };
   }, [id]);
+
+  // the photo wall: my local drops first, then everyone else's
+  const myIds = new Set(myCheckins.map((c) => c.id));
+  const wall = [
+    ...myCheckins.filter((c) => c.photoUri).map((c) => ({ key: c.id, uri: c.photoUri, who: 'you', at: c.at, verified: c.verified })),
+    ...wallPhotos.filter((p) => !myIds.has(p.id)).map((p) => ({ key: p.id, uri: p.photoUrl, who: `@${p.username}`, at: p.at, verified: p.verified })),
+  ];
 
   const spot = getAnySpot(id);
   const myScore = scores?.[id];
@@ -149,6 +161,27 @@ export default function SpotDetail() {
             <QuickAction icon="share-social" label="Share" onPress={share} />
           </View>
 
+          {/* photo wall — check-in photos hanging on this spot */}
+          {wall.length > 0 ? (
+            <>
+              <View style={styles.sectionRow}>
+                <Text style={styles.section}>PHOTO WALL</Text>
+                <Text style={styles.sectionCount}>{wall.length} photo{wall.length === 1 ? '' : 's'}</Text>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.wallRow}>
+                {wall.map((w, i) => (
+                  <View key={w.key} style={[styles.wallCard, { transform: [{ rotate: `${(i % 2 ? 1 : -1) * (1.2 + (i % 3))}deg` }] }]}>
+                    <Image source={{ uri: w.uri }} style={styles.wallImg} />
+                    <View style={styles.wallMeta}>
+                      <Text style={styles.wallWho} numberOfLines={1}>{w.who}</Text>
+                      {w.verified ? <Ionicons name="checkmark-circle" size={12} color="#4CAF6D" /> : null}
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            </>
+          ) : null}
+
           {/* real friends' scores */}
           {friendScores.length > 0 ? (
             <>
@@ -199,9 +232,23 @@ export default function SpotDetail() {
         </View>
       </ScrollView>
 
-      {/* sticky rank bar */}
+      {/* sticky action bar */}
       <View style={[styles.rankBar, { paddingBottom: insets.bottom + 14 }]}>
-        <AddaButton label={myScore ? 'Re-rank this spot' : 'Rank this spot'} onPress={rank} icon={<Ionicons name="trophy" size={18} color="#fff" />} />
+        <View style={styles.barRow}>
+          <AddaButton
+            label={myCheckins.length ? 'Check in again' : 'Check in'}
+            variant="secondary"
+            onPress={() => router.push(`/checkin/${id}`)}
+            icon={<Ionicons name="pin" size={17} color={colors.textOnDark} />}
+            style={{ flex: 1, width: undefined }}
+          />
+          <AddaButton
+            label={myScore ? 'Re-rank' : 'Rank this spot'}
+            onPress={rank}
+            icon={<Ionicons name="trophy" size={18} color="#fff" />}
+            style={{ flex: 1.2, width: undefined }}
+          />
+        </View>
       </View>
     </View>
   );
@@ -257,6 +304,16 @@ const styles = StyleSheet.create({
   rvText: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 21, color: colors.textOnDarkMuted, marginTop: 3 },
 
   rankBar: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 20, paddingTop: 14, backgroundColor: colors.ink, borderTopWidth: 1, borderTopColor: colors.hairline },
+  barRow: { flexDirection: 'row', gap: 10 },
+
+  wallRow: { gap: 14, paddingVertical: 6, paddingRight: 8 },
+  wallCard: {
+    backgroundColor: '#fff', borderRadius: 5, padding: 6, paddingBottom: 6,
+    shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 6,
+  },
+  wallImg: { width: 120, height: 120, borderRadius: 3, backgroundColor: colors.ink3 },
+  wallMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, paddingHorizontal: 2, width: 120 },
+  wallWho: { fontFamily: fonts.bold, fontSize: 11, color: colors.textOnLight, flex: 1 },
   fsScore: { backgroundColor: colors.red, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 5 },
   fsScoreTxt: { fontFamily: fonts.extrabold, fontSize: 13, color: '#fff' },
 });

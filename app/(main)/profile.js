@@ -15,6 +15,7 @@ import { useGoing, resetGoing } from '../../lib/eventStore';
 import { useSaved, resetSaved } from '../../lib/savedStore';
 import { resetUserSpots } from '../../lib/userSpots';
 import { useStreak, resetStreak } from '../../lib/streakStore';
+import { useCheckins, resetCheckins } from '../../lib/checkinStore';
 import { computeBadges } from '../../lib/badges';
 import { getSession, supabase } from '../../lib/supabase';
 
@@ -29,6 +30,7 @@ export default function Profile() {
   const { count: goingCount } = useGoing();
   const { count: savedCount } = useSaved();
   const streak = useStreak();
+  const { count: checkinCount, photoCount } = useCheckins();
 
   const badges = computeBadges({
     rankedCount: total,
@@ -37,6 +39,8 @@ export default function Profile() {
     followCount,
     goingCount,
     bestStreak: streak.best,
+    checkinCount,
+    photoCount,
   });
   const earnedCount = badges.filter((b) => b.earned).length;
 
@@ -58,6 +62,7 @@ export default function Profile() {
     await resetSaved();
     await resetUserSpots();
     await resetStreak();
+    await resetCheckins();
     await AsyncStorage.multiRemove([STORAGE.onboarded, STORAGE.username, STORAGE.locationAsked]).catch(() => {});
     router.replace('/onboarding');
   };
