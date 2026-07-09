@@ -32,7 +32,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
-import PixelAvatar from './PixelAvatar';
+import PixelCharacter from './PixelCharacter';
+import { useCharacter } from '../lib/characterStore';
 import { getCategory } from '../constants/spots';
 import { getEventCategory } from '../constants/events';
 import { colors, fonts } from '../constants/theme';
@@ -221,10 +222,11 @@ function PhotoDrop({ d, pos, onPress, tx, ty, s }) {
 }
 
 function YouMarker({ pos, tx, ty, s }) {
+  const character = useCharacter('you');
   const st = useAnimatedStyle(() => ({
     transform: [
-      { translateX: tx.value + s.value * pos.x - 17 },
-      { translateY: ty.value + s.value * pos.y - 46 },
+      { translateX: tx.value + s.value * pos.x - 14 },
+      { translateY: ty.value + s.value * pos.y - 52 },
     ],
   }));
   return (
@@ -232,7 +234,7 @@ function YouMarker({ pos, tx, ty, s }) {
       <Animated.View style={st}>
         <View style={styles.youWrap}>
           <View style={styles.youRing} />
-          <PixelAvatar seed="you" size={34} tint={colors.maroon} />
+          <PixelCharacter config={character} scale={2.3} />
           <View style={styles.nameTag}><Text style={styles.nameTxt}>you</Text></View>
         </View>
       </Animated.View>
@@ -495,7 +497,7 @@ const styles = StyleSheet.create({
 
   youWrap: { alignItems: 'center' },
   youRing: {
-    position: 'absolute', top: -5, width: 46, height: 46, borderRadius: 23,
+    position: 'absolute', top: 8, width: 52, height: 52, borderRadius: 26,
     borderWidth: 3, borderColor: colors.red, opacity: 0.55,
   },
   nameTag: {

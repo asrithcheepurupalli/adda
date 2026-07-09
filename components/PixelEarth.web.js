@@ -21,7 +21,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import PixelAvatar from './PixelAvatar';
 import { getCategory } from '../constants/spots';
 import { getEventCategory } from '../constants/events';
 import { colors, fonts } from '../constants/theme';

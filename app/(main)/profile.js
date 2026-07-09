@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, fonts, radius, STORAGE } from '../../constants/theme';
 import PixelAvatar from '../../components/PixelAvatar';
+import PixelCharacter from '../../components/PixelCharacter';
+import { useCharacter } from '../../lib/characterStore';
 import { getCategory } from '../../constants/spots';
 import { getAnySpot, useUserSpots } from '../../lib/userSpots';
 import { getPerson } from '../../constants/people';
@@ -31,6 +33,7 @@ export default function Profile() {
   const { count: savedCount } = useSaved();
   const streak = useStreak();
   const { count: checkinCount, photoCount } = useCheckins();
+  const character = useCharacter(name);
 
   const badges = computeBadges({
     rankedCount: total,
@@ -76,7 +79,13 @@ export default function Profile() {
     <View style={styles.root}>
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + 20, paddingBottom: 120 }}>
         <View style={styles.header}>
-          <PixelAvatar seed={name} size={88} tint={colors.maroon} style={{ borderColor: colors.red, borderWidth: 3 }} />
+          <Pressable onPress={() => router.push('/character')} style={styles.charStage}>
+            <PixelCharacter config={character} scale={5} />
+            <View style={styles.editLook}>
+              <Ionicons name="color-palette" size={12} color="#fff" />
+              <Text style={styles.editLookTxt}>EDIT LOOK</Text>
+            </View>
+          </Pressable>
           <Text style={styles.name}>@{name}</Text>
           <Text style={styles.tagline}>
             {email ? `Signed in as ${email}` : 'Exploring Vizag, one adda at a time.'}
@@ -243,5 +252,11 @@ const styles = StyleSheet.create({
   emptyBtn: { marginTop: 10, backgroundColor: colors.red, paddingHorizontal: 20, paddingVertical: 12, borderRadius: radius.md },
   emptyBtnTxt: { fontFamily: fonts.label, fontSize: 13, letterSpacing: 1, color: '#fff', textTransform: 'uppercase' },
   reset: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 30 },
+  charStage: { alignItems: 'center' },
+  editLook: {
+    flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8,
+    backgroundColor: colors.red, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5,
+  },
+  editLookTxt: { fontFamily: fonts.label, fontSize: 10, letterSpacing: 1.5, color: '#fff' },
   resetTxt: { fontFamily: fonts.medium, fontSize: 13, color: colors.textOnDarkFaint },
 });

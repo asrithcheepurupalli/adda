@@ -22,7 +22,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import PixelAvatar from './PixelAvatar';
+import PixelCharacter from './PixelCharacter';
+import { useCharacter } from '../lib/characterStore';
 import { SPOTS, getCategory } from '../constants/spots';
 import { getEventCategory } from '../constants/events';
 import { colors, fonts } from '../constants/theme';
@@ -275,6 +276,7 @@ function Cloud({ y, duration, delay, night }) {
 
 // ---- markers ----
 function YouMarker({ seed }) {
+  const character = useCharacter(seed);
   const ring = useSharedValue(0);
   const bob = useSharedValue(0);
   useEffect(() => {
@@ -298,9 +300,7 @@ function YouMarker({ seed }) {
       <View style={styles.youAnchor}>
         <Animated.View style={[styles.youRing, ringSt]} />
         <Animated.View style={[styles.char, bodySt]}>
-          <PixelAvatar seed={seed} size={34} tint={colors.maroon} />
-          <View style={[styles.body, { backgroundColor: colors.maroon }]} />
-          <View style={styles.legs} />
+          <PixelCharacter config={character} scale={2.3} />
           <View style={[styles.nameTag, { backgroundColor: colors.red }]}>
             <Text style={styles.nameTxt}>you</Text>
           </View>

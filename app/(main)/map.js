@@ -17,7 +17,8 @@ import * as Haptics from 'expo-haptics';
 import CityMap from '../../components/CityMap';
 import PixelEarth from '../../components/PixelEarth';
 import SpotMap from '../../components/SpotMap';
-import PixelAvatar from '../../components/PixelAvatar';
+import PixelCharacter from '../../components/PixelCharacter';
+import { useCharacter } from '../../lib/characterStore';
 import { CATEGORY_LIST, SPOTS, getCategory } from '../../constants/spots';
 import { EVENTS, EVENT_CATEGORY_LIST, getEventCategory } from '../../constants/events';
 import { photoForSpot, photoForEvent } from '../../lib/photos';
@@ -53,6 +54,7 @@ export default function MapScreen() {
   const isEvents = mode === 'events';
   const chips = isEvents ? EVENT_CATEGORY_LIST : CATEGORY_LIST;
 
+  const myCharacter = useCharacter('you');
   const { spots: userSpots } = useUserSpots();
   const [friendLayer, setFriendLayer] = useState({});
   const [friendCheckins, setFriendCheckins] = useState([]);
@@ -192,8 +194,8 @@ export default function MapScreen() {
               </Pressable>
             ) : null}
           </View>
-          <Pressable onPress={() => router.push('/(main)/profile')}>
-            <PixelAvatar seed="you" size={48} tint={colors.maroon} />
+          <Pressable onPress={() => router.push('/(main)/profile')} style={styles.meBtn}>
+            <PixelCharacter config={myCharacter} headOnly scale={3.4} />
           </Pressable>
         </View>
 
@@ -351,6 +353,12 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.ink },
   top: { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 16 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  meBtn: {
+    width: 48, height: 48, borderRadius: 24, backgroundColor: colors.maroon,
+    alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+    borderWidth: 2, borderColor: '#fff', paddingTop: 6,
+    shadowColor: '#000', shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 5,
+  },
   search: {
     flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: '#fff', height: 48, borderRadius: radius.pill, paddingHorizontal: 16,

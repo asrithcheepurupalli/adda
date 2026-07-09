@@ -65,6 +65,7 @@ export default function RootLayout() {
         <Stack.Screen name="guide/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="add-spot" options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
         <Stack.Screen name="checkin/[id]" options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
+        <Stack.Screen name="character" options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
         <Stack.Screen name="rank/[id]" options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
         <Stack.Screen name="person/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="user/[id]" options={{ animation: 'slide_from_right' }} />

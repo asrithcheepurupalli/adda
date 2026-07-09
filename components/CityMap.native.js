@@ -10,7 +10,8 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import PixelAvatar from './PixelAvatar';
+import PixelCharacter from './PixelCharacter';
+import { useCharacter } from '../lib/characterStore';
 import { getCategory } from '../constants/spots';
 import { getEventCategory } from '../constants/events';
 import { colors, fonts } from '../constants/theme';
@@ -55,6 +56,7 @@ const CityMap = forwardRef(function CityMap(
 ) {
   const mapRef = useRef(null);
   const [userPos, setUserPos] = useState(null);
+  const youCharacter = useCharacter('you');
 
   // real GPS — permission was requested during onboarding
   useEffect(() => {
@@ -122,7 +124,7 @@ const CityMap = forwardRef(function CityMap(
         <Marker coordinate={userPos} anchor={{ x: 0.5, y: 1 }} zIndex={50}>
           <View style={styles.youWrap}>
             <View style={styles.youRing} />
-            <PixelAvatar seed="you" size={34} tint={colors.maroon} />
+            <PixelCharacter config={youCharacter} scale={2.3} />
             <View style={[styles.nameTag, styles.nameTagSel]}>
               <Text style={styles.nameTxt}>you</Text>
             </View>

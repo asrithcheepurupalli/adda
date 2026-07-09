@@ -32,10 +32,10 @@ const LONG_OVERLAY = { 6: [2, 9], 7: [2, 9], 8: [1, 10] };
 
 export const OPTIONS = {
   skin: ['#F1C9A5', '#E7B58C', '#C68642', '#8D5524'],
-  hair: ['#2B1B12', '#5A3210', '#C24E2B', '#111111', '#C9C4BE', '#6B3FA0'],
-  top: ['#BC2130', '#2E7DD8', '#2E9E6B', '#E5A020', '#7A3FB0', '#F1E9DC'],
-  bottom: ['#241E1C', '#3A4A5A', '#6B5A3E', '#2E3B2E'],
-  hairStyle: ['short', 'long'],
+  hair: ['#2B1B12', '#5A3210', '#C24E2B', '#111111', '#C9C4BE', '#6B3FA0', '#E8B04B'],
+  top: ['#BC2130', '#2E7DD8', '#2E9E6B', '#E5A020', '#7A3FB0', '#F1E9DC', '#1F9BC4', '#241E1C'],
+  bottom: ['#241E1C', '#3A4A5A', '#6B5A3E', '#2E3B2E', '#8A5A33'],
+  hairStyle: ['short', 'long', 'cap'],
 };
 
 export const DEFAULT_CHARACTER = {
@@ -68,19 +68,29 @@ function colorFor(token, c) {
     case 'T': return c.top;
     case 'B': return c.bottom;
     case 'F': return '#2A2320';
+    case 'C': return c.top; // cap matches the top — coordinated fit
     default: return 'transparent';
   }
 }
 
-function PixelCharacter({ config = DEFAULT_CHARACTER, scale = 6, style }) {
-  const grid = BODY.map((row) => row.split(''));
+function PixelCharacter({ config = DEFAULT_CHARACTER, scale = 6, headOnly = false, style }) {
+  let grid = BODY.map((row) => row.split(''));
   if (config.hairStyle === 'long') {
     for (const r of Object.keys(LONG_OVERLAY)) {
       for (const col of LONG_OVERLAY[r]) grid[Number(r)][col] = 'H';
     }
   }
+  if (config.hairStyle === 'cap') {
+    for (const r of [0, 1]) {
+      grid[r] = grid[r].map((tok) => (tok === 'H' ? 'C' : tok));
+    }
+    // small brim poking out on row 2
+    if (grid[2][1] === '.') grid[2][1] = 'C';
+    if (grid[2][10] === '.') grid[2][10] = 'C';
+  }
+  if (headOnly) grid = grid.slice(0, 8);
   return (
-    <View style={[{ width: 12 * scale, height: 20 * scale }, style]}>
+    <View style={[{ width: 12 * scale, height: grid.length * scale }, style]}>
       {grid.map((row, r) => (
         <View key={r} style={styles.row}>
           {row.map((tok, c) => (
