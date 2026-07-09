@@ -25,10 +25,10 @@
   }
   ::selection { background: #f5b82e33; }
 
-  .wrap { max-width: 1160px; margin: 0 auto; padding: 40px 28px 80px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 40px 28px 80px; }
 
   /* ── Header ── */
-  header { margin-bottom: 34px; }
+  header { margin-bottom: 26px; }
   .eyebrow {
     font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
     color: var(--ink-dim); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
@@ -48,13 +48,28 @@
   }
   .rule b { color: var(--ink); font-weight: 600; }
 
+  /* ── Device switcher ── */
+  .devicebar { display: flex; gap: 8px; margin: 26px 0 24px; flex-wrap: wrap; }
+  .dev-btn {
+    display: flex; flex-direction: column; gap: 2px; text-align: left;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    color: var(--ink-mut); padding: 10px 18px 11px; cursor: pointer;
+    font: 700 14px var(--sans); transition: border-color .15s, background .15s, color .15s;
+    min-width: 150px;
+  }
+  .dev-btn small { font: 500 10.5px var(--mono); color: var(--ink-dim); letter-spacing: .04em; }
+  .dev-btn:hover { border-color: #3d3947; color: var(--ink); }
+  .dev-btn.active { background: var(--panel-2); border-color: var(--mark); color: var(--ink); }
+  .dev-btn.active small { color: var(--mark); }
+  .dev-btn:focus-visible, .sel-btn:focus-visible, .toggle:focus-visible, .mock-cta:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+
   /* ── Stage layout ── */
-  .stage { display: grid; grid-template-columns: minmax(0,1fr) 360px; gap: 36px; align-items: start; }
-  @media (max-width: 980px) { .stage { grid-template-columns: 1fr; } .side { order: -1; } }
+  .stage { display: grid; grid-template-columns: minmax(0,1fr) 350px; gap: 34px; align-items: start; }
+  @media (max-width: 1020px) { .stage { grid-template-columns: 1fr; } .side { order: -1; } }
 
   /* ── Placement selector ── */
   .side { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 14px; }
-  @media (max-width: 980px) { .side { position: static; } }
+  @media (max-width: 1020px) { .side { position: static; } }
   .selector { display: flex; flex-direction: column; gap: 6px; }
   .sel-btn {
     display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; align-items: center;
@@ -63,14 +78,13 @@
     font: 600 13.5px var(--sans); cursor: pointer; transition: border-color .15s, background .15s, color .15s;
   }
   .sel-btn:hover { border-color: #3d3947; color: var(--ink); }
-  .sel-btn:focus-visible, .toggle:focus-visible, .mock-cta:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
   .sel-btn.active { background: var(--panel-2); border-color: var(--mark); color: var(--ink); }
   .sel-btn .pnum {
     font: 700 11px var(--mono); color: var(--ink-dim); border: 1px solid var(--line);
     border-radius: 6px; width: 28px; height: 22px; display: grid; place-items: center;
   }
   .sel-btn.active .pnum { color: var(--mark); border-color: #f5b82e55; }
-  .sel-btn .surf { font: 500 10.5px var(--mono); color: var(--ink-dim); letter-spacing: .04em; }
+  .sel-btn .surf { font: 500 10px var(--mono); color: var(--ink-dim); letter-spacing: .04em; }
 
   .toggle {
     display: flex; align-items: center; gap: 10px; background: var(--panel);
@@ -96,31 +110,56 @@
   .fact { background: var(--panel-2); padding: 9px 12px 10px; }
   .fact .k { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-dim); }
   .fact .v { font-size: 13px; font-weight: 650; margin-top: 2px; font-variant-numeric: tabular-nums; }
-  .fact .v small { color: var(--ink-mut); font-weight: 500; }
 
-  /* ── Phone ─────────────────────────────────── */
-  .device-area { display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 700px; }
+  /* ── Frames ─────────────────────────────────── */
+  .device-area { display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 620px; }
+  .frame-holder { display: none; flex-direction: column; align-items: center; }
+  .frame-holder.on { display: flex; animation: frameIn .35s ease both; }
+  @keyframes frameIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* phone */
   .phone {
-    width: 340px; height: 660px; border-radius: 38px; background: #000;
+    width: 320px; height: 620px; border-radius: 38px; background: #000;
     border: 3px solid #26232c; box-shadow: 0 30px 80px -20px #000, 0 0 0 1px #000;
     padding: 10px; transition: width .45s cubic-bezier(.6,0,.2,1), height .45s cubic-bezier(.6,0,.2,1);
-    position: relative;
+    position: relative; box-sizing: content-box;
   }
-  .phone.landscape { width: 660px; height: 340px; }
-  @media (max-width: 740px) { .phone.landscape { width: min(660px, 94vw); height: calc(min(660px, 94vw) * .515); } }
+  .phone.landscape { width: 620px; height: 320px; }
+  @media (max-width: 740px) { .phone.landscape { width: min(620px, 92vw); height: calc(min(620px, 92vw) * .515); } }
   .screen-clip { width: 100%; height: 100%; border-radius: 28px; overflow: hidden; background: #0c0c0f; position: relative; }
   .notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 86px; height: 20px; background: #000; border-radius: 100px; z-index: 40; }
-  .phone.landscape .notch { top: 50%; left: 10px; transform: translateY(-50%) rotate(90deg); transform-origin: center; }
+  .phone.landscape .notch { top: 50%; left: 10px; transform: translateY(-50%) rotate(90deg); }
 
-  .mock { position: absolute; inset: 0; display: none; flex-direction: column; animation: none; }
-  .mock.on { display: flex; animation: mockIn .35s ease .1s both; }
+  /* tv */
+  .tv-frame {
+    width: min(700px, 94vw); aspect-ratio: 16/9; background: #000;
+    border: 3px solid #26232c; border-radius: 12px; padding: 8px; box-sizing: border-box;
+    box-shadow: 0 40px 100px -24px #000, 0 0 90px -30px #3a165788;
+  }
+  .tv-screen { position: relative; width: 100%; height: 100%; border-radius: 5px; overflow: hidden; background: #0c0c0f; }
+  .tv-stand { width: 200px; height: 9px; background: linear-gradient(#211f28, #121016); border-radius: 0 0 10px 10px; margin-top: -1px; }
+
+  /* desktop / browser */
+  .browser {
+    width: min(720px, 94vw); border-radius: 12px; overflow: hidden;
+    border: 1px solid #2e2b37; background: #17151c;
+    box-shadow: 0 40px 100px -24px #000;
+  }
+  .browser-bar { display: flex; align-items: center; gap: 7px; padding: 9px 13px; background: #1c1a22; border-bottom: 1px solid #100f14; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #f2555a; } .dot.y { background: #f5b82e; } .dot.g { background: #4cc38a; }
+  .urlbox { flex: 1; margin-left: 8px; background: #0f0e13; border-radius: 6px; padding: 4px 12px; font: 500 10.5px var(--mono); color: #8a8791; letter-spacing: .02em; }
+  .desk-screen { position: relative; width: 100%; aspect-ratio: 16/9.4; background: #0c0c0f; overflow: hidden; }
+
+  .mock { position: absolute; inset: 0; display: none; flex-direction: column; }
+  .mock.on { display: flex; animation: mockIn .35s ease .08s both; }
   @keyframes mockIn { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
-    .mock.on { animation: none; } .phone { transition: none; }
-    .pulse, .prog-fill, .ring { animation: none !important; }
+    .mock.on, .frame-holder.on { animation: none; } .phone { transition: none; }
+    .prog-fill, .ring, .amb-art { animation: none !important; }
   }
 
-  .device-note { font: 500 12px var(--mono); color: var(--ink-dim); letter-spacing: .03em; text-align: center; }
+  .device-note { font: 500 12px var(--mono); color: var(--ink-dim); letter-spacing: .03em; text-align: center; max-width: 60ch; }
 
   /* ── Shared Netflix-ish mock chrome ── */
   .m-top { display: flex; align-items: center; gap: 14px; padding: 34px 14px 10px; }
@@ -131,8 +170,8 @@
   .m-scroll { overflow-y: auto; flex: 1; scrollbar-width: none; }
   .m-scroll::-webkit-scrollbar { display: none; }
 
-  .m-hero { margin: 6px 12px 4px; height: 320px; border-radius: 12px; position: relative; overflow: hidden;
-    background: linear-gradient(165deg, #3a1657 0%, #17123f 45%, #060614 100%); border: 1px solid #ffffff14; }
+  .m-hero { margin: 6px 12px 4px; height: 300px; border-radius: 12px; position: relative; overflow: hidden;
+    background: linear-gradient(165deg, #3a1657 0%, #17123f 45%, #060614 100%); border: 1px solid #ffffff14; flex: none; }
   .m-hero .art { position: absolute; inset: 0;
     background: radial-gradient(90px 90px at 75% 22%, #c9591f66, transparent 70%),
                 radial-gradient(150px 120px at 25% 70%, #21837a44, transparent 70%); }
@@ -145,16 +184,17 @@
   .m-hero .b.play { background: #fff; color: #000; }
   .m-hero .b.list { background: #ffffff2b; color: #fff; }
   .editorial-chip { position: absolute; top: 10px; left: 10px; font: 600 9px var(--mono); letter-spacing: .08em;
-    color: var(--good); border: 1px solid #4cc38a55; background: #0d1f16cc; border-radius: 100px; padding: 3px 8px; }
+    color: var(--good); border: 1px solid #4cc38a55; background: #0d1f16cc; border-radius: 100px; padding: 3px 8px; z-index: 3; }
 
-  .m-row { padding: 10px 0 2px 12px; }
+  .m-row { padding: 10px 0 2px 12px; flex: none; }
   .m-row .rt { font-size: 13px; font-weight: 700; margin-bottom: 7px; display: flex; align-items: center; gap: 7px; }
   .m-tiles { display: flex; gap: 7px; overflow-x: auto; padding-right: 12px; scrollbar-width: none; }
   .m-tiles::-webkit-scrollbar { display: none; }
   .tile { flex: none; width: 92px; height: 130px; border-radius: 6px; position: relative; overflow: hidden;
     display: flex; align-items: flex-end; padding: 7px; box-sizing: border-box; border: 1px solid #ffffff10; }
   .tile span { font-size: 9.5px; font-weight: 700; line-height: 1.25; text-shadow: 0 1px 4px #000c; letter-spacing: .02em; }
-  .tile.wide { width: 150px; height: 92px; }
+  .tile.wide { width: 150px; height: 88px; }
+  .tile.focus { outline: 3px solid #fff; outline-offset: 2px; }
   .t1 { background: linear-gradient(160deg,#7a1f2b,#2a0a12); } .t2 { background: linear-gradient(160deg,#1f4d7a,#0a1a2a); }
   .t3 { background: linear-gradient(160deg,#6b4c15,#241804); } .t4 { background: linear-gradient(160deg,#2e6b45,#0a2415); }
   .t5 { background: linear-gradient(160deg,#5b2d7a,#1c0a2a); } .t6 { background: linear-gradient(160deg,#7a5a1f,#2a1d0a); }
@@ -173,20 +213,17 @@
     font: 700 8.5px var(--mono); letter-spacing: .1em; color: #0c0a06; background: var(--mark);
     padding: 3px 7px; border-radius: 4px; white-space: nowrap;
   }
+  .zones-on .adzone.zlow::after { top: auto; bottom: -22px; }
 
-  /* ── P1: Pause Spot (landscape) ── */
+  /* ── Player (shared: mobile landscape / TV / desktop) ── */
   .player { flex: 1; position: relative;
     background: radial-gradient(340px 200px at 34% 45%, #4a3a1a, transparent 75%),
                 radial-gradient(200px 160px at 20% 80%, #14343f, transparent 70%),
                 linear-gradient(150deg, #1a1220, #07070c 70%); }
-  .player .grain { position: absolute; inset: 0; background:
-    radial-gradient(2px 2px at 25% 35%, #ffffff22, transparent),
-    radial-gradient(1.5px 1.5px at 60% 25%, #ffffff1c, transparent),
-    radial-gradient(2px 2px at 45% 65%, #ffffff14, transparent); }
   .player .vtitle { position: absolute; top: 16px; left: 20px; font-size: 12px; font-weight: 600; color: #e9e6ee; text-shadow: 0 1px 4px #000; }
   .player .vtitle small { display: block; font-weight: 400; color: #b9b5c1; font-size: 10px; }
   .pause-glyph { position: absolute; left: 33%; top: 50%; transform: translate(-50%,-50%); width: 52px; height: 52px;
-    border-radius: 50%; background: #ffffff1f; backdrop-filter: blur(4px); display: grid; place-items: center; }
+    border-radius: 50%; background: #ffffff1f; display: grid; place-items: center; }
   .pause-glyph::after { content: ""; width: 14px; height: 18px;
     border-left: 5px solid #fff; border-right: 5px solid #fff; }
   .scrub { position: absolute; left: 20px; right: 20px; bottom: 18px; }
@@ -195,11 +232,12 @@
   .scrub .bar i::after { content: ""; position: absolute; right: -5px; top: -3.5px; width: 10px; height: 10px; border-radius: 50%; background: var(--nflx); }
   .scrub .tm { font: 500 9.5px var(--mono); color: #cfccd4; margin-top: 6px; display: flex; justify-content: space-between; }
 
-  .pause-ad { position: absolute; top: 44px; right: 16px; bottom: 44px; width: 208px;
+  .pause-ad { position: absolute; top: 40px; right: 16px; bottom: 44px; width: 208px;
     background: #100e14ee; border: 1px solid #ffffff1c; border-radius: 12px; padding: 14px;
     box-sizing: border-box; display: flex; flex-direction: column; opacity: 0; transform: translateX(12px);
     transition: opacity .5s ease, transform .5s ease; }
   .pause-ad.in { opacity: 1; transform: none; }
+  .tv-screen .pause-ad { width: 236px; top: 48px; bottom: 52px; }
   .ad-tag { font: 700 8.5px var(--mono); letter-spacing: .1em; color: #b9b5c1; text-transform: uppercase;
     display: flex; justify-content: space-between; }
   .brand-zomato { font: 800 20px var(--sans); color: #ff5566; letter-spacing: -.03em; margin-top: 10px; }
@@ -207,16 +245,17 @@
   .pause-ad .sub { font-size: 10.5px; color: #a39fa8; margin-top: 4px; }
   .qr { margin-top: auto; display: flex; gap: 10px; align-items: center; }
   .qr .code { width: 44px; height: 44px; border-radius: 6px; background:
-    conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0); background-size: 11px 11px; border: 3px solid #fff; }
+    conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0); background-size: 11px 11px; border: 3px solid #fff; flex: none; }
   .qr .cta { font-size: 10px; color: #cfccd4; line-height: 1.4; }
   .mock-cta { margin-top: 10px; background: #fff; color: #000; border: 0; border-radius: 6px;
     font: 700 11px var(--sans); padding: 7px 0; width: 100%; cursor: pointer; }
+  .mock-cta.ghost { background: #ffffff22; color: #fff; }
 
-  /* ── P2: Binge Bridge (landscape) ── */
+  /* ── Post-play (shared) ── */
   .postplay { flex: 1; position: relative; background:
     linear-gradient(110deg, #101018 42%, #0a0a10cc 60%, #07070cee),
     radial-gradient(300px 200px at 80% 30%, #3a1657, #07070c 80%); }
-  .postplay .credits { position: absolute; left: 26px; top: 30px; color: #7d7986; font-size: 9px; line-height: 1.9; }
+  .postplay .credits { position: absolute; left: 26px; top: 26px; color: #7d7986; font-size: 9px; line-height: 1.9; }
   .np-card { position: absolute; left: 24px; bottom: 26px; width: 250px; }
   .np-card .lbl { font-size: 10.5px; color: #b9b5c1; font-weight: 600; }
   .np-card .ep { font-size: 15px; font-weight: 800; margin-top: 2px; }
@@ -227,26 +266,29 @@
   .ring { width: 17px; height: 17px; border-radius: 50%; border: 2px solid #0003; border-top-color: #000;
     animation: spin 1.1s linear infinite; box-sizing: border-box; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .bridge-ad { position: absolute; right: 18px; top: 40px; bottom: 40px; width: 218px;
+  .bridge-ad { position: absolute; right: 18px; top: 36px; bottom: 36px; width: 218px;
     background: linear-gradient(170deg, #17130b, #100e14); border: 1px solid #ffffff1c; border-radius: 12px;
     padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; }
+  .tv-screen .bridge-ad { width: 236px; }
   .brand-swiggy { font: 800 19px var(--sans); color: #ff8b3d; letter-spacing: -.02em; margin-top: 9px; }
   .bridge-ad .hook { font-size: 12.5px; font-weight: 650; line-height: 1.35; margin-top: 5px; }
   .bridge-ad .promo { margin-top: auto; border: 1.5px dashed #ff8b3d88; border-radius: 7px; padding: 7px 10px;
     font: 700 12px var(--mono); color: #ffb27a; letter-spacing: .1em; text-align: center; }
   .bridge-ad .fine { font-size: 9px; color: #7d7986; margin-top: 8px; }
 
-  /* ── P4: Search ── */
+  /* ── Mobile: search / downloads / new&hot ── */
   .searchbar { margin: 34px 12px 10px; background: #26242c; border-radius: 8px; padding: 9px 12px;
-    display: flex; gap: 9px; align-items: center; font-size: 13px; color: #d8d5dc; }
+    display: flex; gap: 9px; align-items: center; font-size: 13px; color: #d8d5dc; flex: none; }
+  .searchbar.desk { margin: 12px 14px 8px; }
   .searchbar .mag { width: 13px; height: 13px; border: 2px solid #8a8791; border-radius: 50%; position: relative; flex: none; }
   .searchbar .mag::after { content: ""; position: absolute; width: 6px; height: 2px; background: #8a8791;
     bottom: -2px; right: -5px; transform: rotate(45deg); }
-  .res-head { padding: 2px 14px 8px; font-size: 11px; color: #8a8791; }
+  .res-head { padding: 2px 14px 8px; font-size: 11px; color: #8a8791; flex: none; }
   .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding: 0 12px 16px; }
   .res-grid .tile { width: auto; height: 132px; }
+  .res-grid.cols5 { grid-template-columns: repeat(5, 1fr); }
+  .res-grid.cols5 .tile { height: 118px; }
 
-  /* ── P5: Downloads ── */
   .dl-head { padding: 40px 16px 6px; font-size: 17px; font-weight: 800; }
   .dl-sub { padding: 0 16px 14px; font-size: 11px; color: #8a8791; }
   .dl-item { display: flex; gap: 12px; margin: 0 12px 10px; background: #141318; border: 1px solid #ffffff0f;
@@ -258,14 +300,13 @@
   .prog { height: 3px; background: #ffffff22; border-radius: 2px; margin-top: 8px; overflow: hidden; }
   .prog-fill { display: block; height: 100%; width: 30%; background: #3b82c4; border-radius: 2px; animation: fill 6s linear infinite; }
   @keyframes fill { from { width: 12%; } to { width: 96%; } }
-  .dl-ad { margin: 14px 12px; border-radius: 12px; overflow: hidden; border: 1px solid #ffffff14;
+  .dl-ad { margin: 14px 12px; border-radius: 12px; border: 1px solid #ffffff14;
     background: linear-gradient(135deg, #0b2036, #101725); padding: 14px; }
   .brand-jio { font: 800 18px var(--sans); color: #59b6ff; letter-spacing: -.02em; margin-top: 8px; }
   .dl-ad .hook { font-size: 13px; font-weight: 650; margin-top: 4px; line-height: 1.4; }
   .dl-ad .sub { font-size: 10.5px; color: #a3b6c6; margin-top: 4px; }
 
-  /* ── P6: New & Hot ── */
-  .nh-head { padding: 38px 14px 8px; display: flex; gap: 14px; font-size: 15px; font-weight: 800; }
+  .nh-head { padding: 38px 14px 8px; display: flex; gap: 14px; font-size: 15px; font-weight: 800; flex: none; }
   .nh-head .dim { color: #6f6b76; }
   .nh-card { display: flex; gap: 10px; padding: 8px 12px 14px; }
   .nh-date { width: 34px; flex: none; text-align: center; }
@@ -282,6 +323,79 @@
   .vbrand { background: radial-gradient(190px 110px at 65% 45%, #c9251f4d, transparent), linear-gradient(150deg,#26120f,#0d0b12); }
   .brand-boat { position: absolute; left: 10px; top: 10px; font: 800 13px var(--sans); color: #ff4d4d; }
 
+  /* ── TV-specific ── */
+  .tv-home { flex: 1; display: flex; min-height: 0; }
+  .tv-rail { width: 44px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 18px;
+    padding-top: 26px; background: linear-gradient(90deg, #0c0c0fee, #0c0c0f00); z-index: 5; }
+  .tv-rail .ic { width: 16px; height: 16px; border-radius: 4px; background: #4a4653; }
+  .tv-rail .ic.on { background: #f4f1ec; }
+  .tv-rail .n { font: 900 18px var(--sans); color: var(--nflx); }
+  .tv-main { flex: 1; overflow-y: auto; scrollbar-width: none; min-width: 0; }
+  .tv-main::-webkit-scrollbar { display: none; }
+  .tv-bill { height: 165px; position: relative; flex: none;
+    background: radial-gradient(260px 130px at 70% 35%, #c9591f55, transparent 70%),
+                linear-gradient(165deg, #3a1657 0%, #17123f 50%, #0c0c0f 100%); }
+  .tv-bill .meta { position: absolute; left: 18px; bottom: 14px; }
+  .tv-bill .ttl { font-size: 22px; font-weight: 800; letter-spacing: .02em; }
+  .tv-bill .tags { font-size: 10px; color: #cfccd4; margin-top: 2px; }
+  .tv-row { padding: 8px 0 2px 18px; }
+  .tv-row .rt { font-size: 12px; font-weight: 700; margin-bottom: 6px; display: flex; gap: 7px; align-items: center; }
+  .tv-row .m-tiles { gap: 8px; }
+  .tv-row .tile { width: 118px; height: 70px; }
+
+  .still { flex: 1; position: relative; background: radial-gradient(400px 220px at 50% 30%, #14121c, #060609 80%); }
+  .still-box { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-56%); text-align: center; width: 300px; }
+  .still-box .q { font-size: 16px; font-weight: 750; text-wrap: balance; }
+  .still-box .s { font-size: 10.5px; color: #8a8791; margin-top: 5px; }
+  .still-box .btns { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
+  .still-box .b { font-size: 11.5px; font-weight: 700; border-radius: 5px; padding: 7px 16px; }
+  .still-box .b.yes { background: #fff; color: #000; }
+  .still-box .b.no { background: #ffffff22; color: #fff; }
+  .still-ad { position: absolute; right: 18px; bottom: 18px; width: 250px; display: flex; gap: 11px; align-items: center;
+    background: #12100aee; border: 1px solid #ffffff1c; border-radius: 12px; padding: 12px; box-sizing: border-box; }
+  .still-ad .cup { width: 40px; height: 40px; border-radius: 9px; flex: none;
+    background: linear-gradient(150deg, #6b4c15, #241804); display: grid; place-items: center; font-size: 17px; }
+  .still-ad .t { font-size: 11px; font-weight: 700; line-height: 1.3; }
+  .still-ad .t small { display: block; font-weight: 500; color: #a39fa8; font-size: 9.5px; margin-top: 2px; }
+
+  .ambient { flex: 1; position: relative; overflow: hidden;
+    background: linear-gradient(160deg, #241335, #101a2e 55%, #070a12); }
+  .amb-art { position: absolute; inset: -20px;
+    background: radial-gradient(280px 180px at 68% 38%, #c9591f4d, transparent 70%),
+                radial-gradient(220px 160px at 25% 65%, #21837a33, transparent 70%);
+    animation: drift 14s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translateX(-12px); } to { transform: translateX(12px); } }
+  .amb-clock { position: absolute; top: 18px; right: 22px; font: 300 26px var(--sans); color: #e9e6eecc; letter-spacing: .02em; }
+  .amb-title { position: absolute; left: 24px; bottom: 44px; }
+  .amb-title .t { font-size: 26px; font-weight: 800; letter-spacing: .06em; }
+  .amb-title .s { font-size: 10.5px; color: #b9b5c1; margin-top: 3px; }
+  .amb-spon { position: absolute; right: 22px; bottom: 20px; display: flex; align-items: center; gap: 9px;
+    background: #0d0b12cc; border: 1px solid #ffffff1a; border-radius: 100px; padding: 7px 14px; }
+  .amb-spon .lbl { font: 600 8.5px var(--mono); letter-spacing: .1em; color: #a39fa8; text-transform: uppercase; }
+  .brand-tanishq { font: 700 13px var(--sans); color: #e8c67a; letter-spacing: .12em; }
+
+  /* ── Desktop-specific ── */
+  .dk-nav { display: flex; align-items: center; gap: 16px; padding: 12px 16px 10px; flex: none;
+    background: linear-gradient(#0c0c0f, #0c0c0fcc); z-index: 5; }
+  .dk-nav .m-n { font-size: 19px; }
+  .dk-nav .lnk { font-size: 11.5px; color: #d8d5dc; font-weight: 500; }
+  .dk-nav .lnk.dim { color: #8a8791; }
+  .dk-nav .right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+  .dk-bill { margin: 0; height: 170px; position: relative; flex: none;
+    background: radial-gradient(300px 140px at 72% 30%, #c9591f55, transparent 70%),
+                linear-gradient(165deg, #3a1657 0%, #17123f 50%, #0c0c0f 100%); }
+  .dk-bill .meta { position: absolute; left: 20px; bottom: 16px; max-width: 300px; }
+  .dk-bill .ttl { font-size: 24px; font-weight: 800; letter-spacing: .02em; }
+  .dk-bill .desc { font-size: 10.5px; color: #cfccd4; margin-top: 4px; line-height: 1.4; }
+  .dk-bill .btns { display: flex; gap: 8px; margin-top: 10px; }
+  .dk-bill .b { border-radius: 4px; font-size: 11.5px; font-weight: 700; padding: 6px 16px; }
+  .dk-bill .b.play { background: #fff; color: #000; }
+  .dk-bill .b.info { background: #ffffff2b; color: #fff; }
+  .dk-row { padding: 8px 0 2px 16px; flex: none; }
+  .dk-row .rt { font-size: 12.5px; font-weight: 700; margin-bottom: 6px; display: flex; gap: 7px; align-items: center; }
+  .dk-row .tile { width: 116px; height: 66px; }
+  .hoverhint { position: absolute; left: 12px; top: -6px; font-size: 8.5px; color: var(--ink-dim); }
+
   footer { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 16px;
     color: var(--ink-dim); font-size: 12px; max-width: 74ch; }
   footer b { color: var(--ink-mut); }
@@ -290,8 +404,8 @@
 <div class="wrap">
   <header>
     <div class="eyebrow">Concept pitch · Netflix India · July 2026</div>
-    <h1>Ads that never touch the story.<br>Six placements Netflix India isn't monetizing.</h1>
-    <p class="lede">Netflix India runs <strong>zero ads</strong> today (₹149–₹649/mo, all ad-free) while the global ad tier reaches <strong>250M monthly viewers</strong> and ~<strong>$3B in 2026 revenue</strong>. Every placement below lives in dead time or browse surfaces — <strong>no playback is ever interrupted, and the hero stays editorial.</strong></p>
+    <h1>Ads that never touch the story.<br>Every screen Netflix lives on.</h1>
+    <p class="lede">Netflix India runs <strong>zero ads</strong> today (₹149–₹649/mo, all ad-free) while the global ad tier reaches <strong>250M monthly viewers</strong> and ~<strong>$3B in 2026 revenue</strong>. Fifteen placements across <strong>mobile, TV and desktop</strong> — all in dead time or browse surfaces. <strong>No playback is ever interrupted, and the hero stays editorial.</strong></p>
     <div class="rules">
       <div class="rule"><b>Rule 1</b> — never stop the story</div>
       <div class="rule"><b>Rule 2</b> — never touch the hero</div>
@@ -299,195 +413,421 @@
     </div>
   </header>
 
+  <div class="devicebar" id="devicebar">
+    <button class="dev-btn" data-dev="mobile">📱 Mobile<small>~70% OF INDIA VIEWING · 6 PLACEMENTS</small></button>
+    <button class="dev-btn" data-dev="tv">📺 TV<small>HIGHEST CPM SCREEN · 5 PLACEMENTS</small></button>
+    <button class="dev-btn" data-dev="desktop">🖥️ Desktop<small>ONE CLICK FROM CHECKOUT · 4 PLACEMENTS</small></button>
+  </div>
+
   <div class="stage">
-    <div class="device-area">
-      <div class="phone" id="phone">
-        <div class="screen-clip" id="screenClip">
-          <div class="notch"></div>
+    <div class="device-area" id="deviceArea">
 
-          <!-- P1 · Pause Spot -->
-          <div class="mock" id="mock-p1">
-            <div class="player">
-              <div class="grain"></div>
-              <div class="vtitle">Mirzapur · S3 E4<small>“Bhaukaal”</small></div>
-              <div class="pause-glyph"></div>
-              <div class="pause-ad adzone" id="pauseAd" data-zone="P1 · APPEARS 3S AFTER PAUSE">
-                <div class="ad-tag"><span>Ad</span><span>disappears on play</span></div>
-                <div class="brand-zomato">zomato</div>
-                <div class="hook">Interval? Biryani delivers before your next scene.</div>
-                <div class="sub">Late-night kitchens near you are open.</div>
-                <div class="qr">
-                  <div class="code"></div>
-                  <div class="cta">Scan for 30% off<br>tonight only</div>
+      <!-- ════════ MOBILE ════════ -->
+      <div class="frame-holder" id="frame-mobile">
+        <div class="phone" id="phone">
+          <div class="screen-clip">
+            <div class="notch"></div>
+
+            <div class="mock" id="mock-p1">
+              <div class="player">
+                <div class="vtitle">Mirzapur · S3 E4<small>“Bhaukaal”</small></div>
+                <div class="pause-glyph"></div>
+                <div class="pause-ad adzone" id="pauseAdM" data-zone="P1 · APPEARS 3S AFTER PAUSE">
+                  <div class="ad-tag"><span>Ad</span><span>disappears on play</span></div>
+                  <div class="brand-zomato">zomato</div>
+                  <div class="hook">Interval? Biryani delivers before your next scene.</div>
+                  <div class="sub">Late-night kitchens near you are open.</div>
+                  <div class="qr"><div class="code"></div><div class="cta">Scan for 30% off<br>tonight only</div></div>
+                  <button class="mock-cta">Resume watching ▶</button>
                 </div>
-                <button class="mock-cta">Resume watching ▶</button>
-              </div>
-              <div class="scrub">
-                <div class="bar"><i></i></div>
-                <div class="tm"><span>23:41</span><span>56:12</span></div>
+                <div class="scrub"><div class="bar"><i></i></div><div class="tm"><span>23:41</span><span>56:12</span></div></div>
               </div>
             </div>
-          </div>
 
-          <!-- P2 · Binge Bridge -->
-          <div class="mock" id="mock-p2">
-            <div class="postplay">
-              <div class="credits">Directed by<br>Anurag Kashyap<br><br>Cinematography<br>S. Ravi Varman<br><br>Music<br>Amit Trivedi</div>
-              <div class="np-card">
-                <div class="lbl">Next episode</div>
-                <div class="ep">E5 · “Raat Baaki”</div>
-                <div class="btns">
-                  <div class="b now"><span class="ring"></span> Playing in <span id="cd">12</span>s</div>
-                  <div class="b cred">Watch credits</div>
+            <div class="mock" id="mock-p2">
+              <div class="postplay">
+                <div class="credits">Directed by<br>Anurag Kashyap<br><br>Cinematography<br>S. Ravi Varman<br><br>Music<br>Amit Trivedi</div>
+                <div class="np-card">
+                  <div class="lbl">Next episode</div>
+                  <div class="ep">E5 · “Raat Baaki”</div>
+                  <div class="btns"><div class="b now"><span class="ring"></span> Playing in <span class="cd">12</span>s</div><div class="b cred">Watch credits</div></div>
                 </div>
-              </div>
-              <div class="bridge-ad adzone" data-zone="P2 · EPISODE STILL PLAYS ON TIME">
-                <div class="ad-tag"><span>Sponsored bridge</span><span>skippable</span></div>
-                <div class="brand-swiggy">Swiggy</div>
-                <div class="hook">Episode 5 already? Dinner’s on us tonight.</div>
-                <div class="promo">FLAT40 · 40% OFF</div>
-                <div class="fine">Your episode starts on schedule — this card never delays playback.</div>
+                <div class="bridge-ad adzone" data-zone="P2 · EPISODE STILL PLAYS ON TIME">
+                  <div class="ad-tag"><span>Sponsored bridge</span><span>skippable</span></div>
+                  <div class="brand-swiggy">Swiggy</div>
+                  <div class="hook">Episode 5 already? Dinner’s on us tonight.</div>
+                  <div class="promo">FLAT40 · 40% OFF</div>
+                  <div class="fine">Your episode starts on schedule — this card never delays playback.</div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- P3 · Sponsored Collection -->
-          <div class="mock" id="mock-p3">
-            <div class="m-top">
-              <div class="m-n">N</div>
-              <div class="m-tabs"><span>TV Shows</span><span class="dim">Movies</span><span class="dim">Categories</span></div>
-              <div class="m-ava"></div>
+            <div class="mock" id="mock-p3">
+              <div class="m-top">
+                <div class="m-n">N</div>
+                <div class="m-tabs"><span>TV Shows</span><span class="dim">Movies</span><span class="dim">Categories</span></div>
+                <div class="m-ava"></div>
+              </div>
+              <div class="m-scroll">
+                <div class="m-hero">
+                  <div class="art"></div>
+                  <div class="editorial-chip">HERO — 100% EDITORIAL, NEVER SOLD</div>
+                  <div class="meta">
+                    <div class="ttl">HEERAMANDI</div>
+                    <div class="tags">Lavish · Period Drama · Emotional</div>
+                    <div class="btns"><div class="b play">▶ Play</div><div class="b list">+ My List</div></div>
+                  </div>
+                </div>
+                <div class="m-row">
+                  <div class="rt">Continue Watching</div>
+                  <div class="m-tiles">
+                    <div class="tile t1"><span>Sacred Games</span><div class="cw-bar"><i style="width:62%"></i></div></div>
+                    <div class="tile t2"><span>Kota Factory</span><div class="cw-bar"><i style="width:31%"></i></div></div>
+                    <div class="tile t4"><span>The Railway Men</span><div class="cw-bar"><i style="width:84%"></i></div></div>
+                    <div class="tile t5"><span>Wednesday</span><div class="cw-bar"><i style="width:12%"></i></div></div>
+                  </div>
+                </div>
+                <div class="m-row">
+                  <div class="rt">Top 10 in India Today</div>
+                  <div class="m-tiles">
+                    <div class="tile t6"><span>Squid Game</span></div>
+                    <div class="tile t7"><span>Delhi Crime</span></div>
+                    <div class="tile t8"><span>Guns &amp; Gulaabs</span></div>
+                    <div class="tile t3"><span>Jamtara</span></div>
+                  </div>
+                </div>
+                <div class="m-row adzone" data-zone="P3 · ROW 3+, REAL TITLES ONLY">
+                  <div class="rt">Friday Night Thrillers <span class="spons-chip">Presented by CRED</span></div>
+                  <div class="m-tiles">
+                    <div class="tile t2"><span>Andhadhun</span></div>
+                    <div class="tile t1"><span>Monica, O My Darling</span></div>
+                    <div class="tile t7"><span>Drishyam</span></div>
+                    <div class="tile t5"><span>Haseen Dillruba</span></div>
+                  </div>
+                </div>
+                <div class="m-row">
+                  <div class="rt">Critically Acclaimed Films</div>
+                  <div class="m-tiles">
+                    <div class="tile t4"><span>12th Fail</span></div>
+                    <div class="tile t3"><span>Laapataa Ladies</span></div>
+                    <div class="tile t8"><span>Kathal</span></div>
+                    <div class="tile t6"><span>Serious Men</span></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="m-scroll">
-              <div class="m-hero">
-                <div class="art"></div>
-                <div class="editorial-chip">HERO — 100% EDITORIAL, NEVER SOLD</div>
-                <div class="meta">
-                  <div class="ttl">HEERAMANDI</div>
-                  <div class="tags">Lavish · Period Drama · Emotional</div>
-                  <div class="btns"><div class="b play">▶ Play</div><div class="b list">+ My List</div></div>
-                </div>
-              </div>
-              <div class="m-row">
-                <div class="rt">Continue Watching</div>
-                <div class="m-tiles">
-                  <div class="tile t1"><span>Sacred Games</span><div class="cw-bar"><i style="width:62%"></i></div></div>
-                  <div class="tile t2"><span>Kota Factory</span><div class="cw-bar"><i style="width:31%"></i></div></div>
-                  <div class="tile t4"><span>The Railway Men</span><div class="cw-bar"><i style="width:84%"></i></div></div>
-                  <div class="tile t5"><span>Wednesday</span><div class="cw-bar"><i style="width:12%"></i></div></div>
-                </div>
-              </div>
-              <div class="m-row">
-                <div class="rt">Top 10 in India Today</div>
-                <div class="m-tiles">
-                  <div class="tile t6"><span>Squid Game</span></div>
-                  <div class="tile t7"><span>Delhi Crime</span></div>
-                  <div class="tile t8"><span>Guns &amp; Gulaabs</span></div>
-                  <div class="tile t3"><span>Jamtara</span></div>
-                </div>
-              </div>
-              <div class="m-row adzone" data-zone="P3 · ROW 3+, REAL TITLES ONLY">
-                <div class="rt">Friday Night Thrillers <span class="spons-chip">Presented by CRED</span></div>
-                <div class="m-tiles">
+
+            <div class="mock" id="mock-p4">
+              <div class="searchbar"><span class="mag"></span> thriller</div>
+              <div class="res-head">Top results for “thriller”</div>
+              <div class="m-scroll">
+                <div class="res-grid">
+                  <div class="tile t1"><span>Sacred Games</span></div>
                   <div class="tile t2"><span>Andhadhun</span></div>
-                  <div class="tile t1"><span>Monica, O My Darling</span></div>
-                  <div class="tile t7"><span>Drishyam</span></div>
+                  <div class="tile t7"><span>Delhi Crime</span></div>
                   <div class="tile t5"><span>Haseen Dillruba</span></div>
-                </div>
-              </div>
-              <div class="m-row">
-                <div class="rt">Critically Acclaimed Films</div>
-                <div class="m-tiles">
-                  <div class="tile t4"><span>12th Fail</span></div>
-                  <div class="tile t3"><span>Laapataa Ladies</span></div>
-                  <div class="tile t8"><span>Kathal</span></div>
-                  <div class="tile t6"><span>Serious Men</span></div>
+                  <div class="tile t3"><span>Jamtara</span></div>
+                  <div class="tile t8"><span>Guns &amp; Gulaabs</span></div>
+                  <div class="tile t6"><span>Squid Game</span></div>
+                  <div class="tile t4"><span>Kohrra</span></div>
+                  <div class="tile vbrand adzone zlow" data-zone="P4 · LAST TILE ONLY">
+                    <span>Class of ’84<br><span class="spons-chip" style="margin-top:4px;display:inline-block">Sponsored · boAt</span></span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- P4 · Search Spotlight -->
-          <div class="mock" id="mock-p4">
-            <div class="searchbar"><span class="mag"></span> thriller</div>
-            <div class="res-head">Top results for “thriller”</div>
-            <div class="m-scroll">
-              <div class="res-grid">
-                <div class="tile t1"><span>Sacred Games</span></div>
-                <div class="tile t2"><span>Andhadhun</span></div>
-                <div class="tile t7"><span>Delhi Crime</span></div>
-                <div class="tile t5"><span>Haseen Dillruba</span></div>
-                <div class="tile t3"><span>Jamtara</span></div>
-                <div class="tile t8"><span>Guns &amp; Gulaabs</span></div>
-                <div class="tile t6"><span>Squid Game</span></div>
-                <div class="tile t4"><span>Kohrra</span></div>
-                <div class="tile vbrand adzone" data-zone="P4 · LAST TILE ONLY" style="display:flex;align-items:flex-end;padding:7px;">
-                  <span style="z-index:2">Class of ’84 <br><span class="spons-chip" style="margin-top:4px;display:inline-block">Sponsored · boAt</span></span>
+            <div class="mock" id="mock-p5">
+              <div class="dl-head">Downloads</div>
+              <div class="dl-sub">Smart downloads is ON · Wi-Fi only</div>
+              <div class="dl-item">
+                <div class="dl-thumb t1"></div>
+                <div class="dl-meta">
+                  <div class="t">Mirzapur · S3 E5</div>
+                  <div class="s">Downloading · 213 MB of 480 MB</div>
+                  <div class="prog"><span class="prog-fill"></span></div>
                 </div>
               </div>
+              <div class="dl-item">
+                <div class="dl-thumb t4"></div>
+                <div class="dl-meta"><div class="t">12th Fail</div><div class="s">Downloaded · 1.1 GB</div></div>
+              </div>
+              <div class="dl-ad adzone" data-zone="P5 · ONLY WHILE A DOWNLOAD RUNS">
+                <div class="ad-tag"><span>Ad</span><span>while you wait</span></div>
+                <div class="brand-jio">Jio</div>
+                <div class="hook">This download’s data is on us.</div>
+                <div class="sub">Jio users: unlimited Netflix downloads every weekend. Claim in MyJio.</div>
+              </div>
             </div>
-          </div>
 
-          <!-- P5 · Download Break -->
-          <div class="mock" id="mock-p5">
-            <div class="dl-head">Downloads</div>
-            <div class="dl-sub">Smart downloads is ON · Wi-Fi only</div>
-            <div class="dl-item">
-              <div class="dl-thumb t1"></div>
-              <div class="dl-meta">
-                <div class="t">Mirzapur · S3 E5</div>
-                <div class="s">Downloading · 213 MB of 480 MB</div>
-                <div class="prog"><span class="prog-fill"></span></div>
+            <div class="mock" id="mock-p6">
+              <div class="nh-head"><span>🍿 Coming Soon</span><span class="dim">🔥 Everyone’s Watching</span></div>
+              <div class="m-scroll">
+                <div class="nh-card">
+                  <div class="nh-date"><div class="mo">JUL</div><div class="dy">18</div></div>
+                  <div class="nh-body">
+                    <div class="nh-vid v1"><div class="mute">🔇</div></div>
+                    <div class="nh-t">Mirzapur: The Film</div>
+                    <div class="nh-s">The bhaukaal returns, bigger. · Trailer</div>
+                  </div>
+                </div>
+                <div class="nh-card">
+                  <div class="nh-date"><div class="mo">JUL</div><div class="dy">24</div></div>
+                  <div class="nh-body adzone" data-zone="P6 · 1 PER ~8 CARDS, SCROLL PAST FREELY">
+                    <div class="nh-vid vbrand"><div class="brand-boat">boAt</div><div class="mute">🔇</div></div>
+                    <div class="nh-t">Hear Stranger Things the way Vecna does <span class="spons-chip">Branded trailer</span></div>
+                    <div class="nh-s">boAt × Stranger Things limited edition drop · film-grade spot, sound off by default</div>
+                  </div>
+                </div>
+                <div class="nh-card">
+                  <div class="nh-date"><div class="mo">AUG</div><div class="dy">02</div></div>
+                  <div class="nh-body">
+                    <div class="nh-vid v2"><div class="mute">🔇</div></div>
+                    <div class="nh-t">Kohrra · Season 3</div>
+                    <div class="nh-s">The fog never lifted. · Teaser</div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="dl-item">
-              <div class="dl-thumb t4"></div>
-              <div class="dl-meta">
-                <div class="t">12th Fail</div>
-                <div class="s">Downloaded · 1.1 GB</div>
-              </div>
-            </div>
-            <div class="dl-ad adzone" data-zone="P5 · ONLY WHILE A DOWNLOAD RUNS">
-              <div class="ad-tag"><span>Ad</span><span>while you wait</span></div>
-              <div class="brand-jio">Jio</div>
-              <div class="hook">This download’s data is on us.</div>
-              <div class="sub">Jio users: unlimited Netflix downloads every weekend. Claim in MyJio.</div>
-            </div>
-          </div>
 
-          <!-- P6 · New & Hot Preview -->
-          <div class="mock" id="mock-p6">
-            <div class="nh-head"><span>🍿 Coming Soon</span><span class="dim">🔥 Everyone’s Watching</span></div>
-            <div class="m-scroll">
-              <div class="nh-card">
-                <div class="nh-date"><div class="mo">JUL</div><div class="dy">18</div></div>
-                <div class="nh-body">
-                  <div class="nh-vid v1"><div class="mute">🔇</div></div>
-                  <div class="nh-t">Mirzapur: The Film</div>
-                  <div class="nh-s">The bhaukaal returns, bigger. · Trailer</div>
-                </div>
-              </div>
-              <div class="nh-card">
-                <div class="nh-date"><div class="mo">JUL</div><div class="dy">24</div></div>
-                <div class="nh-body adzone" data-zone="P6 · 1 PER ~8 CARDS, SCROLL PAST FREELY">
-                  <div class="nh-vid vbrand"><div class="brand-boat">boAt</div><div class="mute">🔇</div></div>
-                  <div class="nh-t">Hear Stranger Things the way Vecna does <span class="spons-chip">Branded trailer</span></div>
-                  <div class="nh-s">boAt × Stranger Things limited edition drop · film-grade spot, sound off by default</div>
-                </div>
-              </div>
-              <div class="nh-card">
-                <div class="nh-date"><div class="mo">AUG</div><div class="dy">02</div></div>
-                <div class="nh-body">
-                  <div class="nh-vid v2"><div class="mute">🔇</div></div>
-                  <div class="nh-t">Kohrra · Season 3</div>
-                  <div class="nh-s">The fog never lifted. · Teaser</div>
-                </div>
-              </div>
-            </div>
           </div>
-
         </div>
       </div>
+
+      <!-- ════════ TV ════════ -->
+      <div class="frame-holder" id="frame-tv">
+        <div class="tv-frame">
+          <div class="tv-screen">
+
+            <div class="mock" id="mock-t1">
+              <div class="player">
+                <div class="vtitle">Mirzapur · S3 E4<small>“Bhaukaal” · 4K Dolby Vision</small></div>
+                <div class="pause-glyph"></div>
+                <div class="pause-ad adzone" id="pauseAdT" data-zone="T1 · APPEARS 3S AFTER PAUSE">
+                  <div class="ad-tag"><span>Ad</span><span>disappears on play</span></div>
+                  <div class="brand-zomato">zomato</div>
+                  <div class="hook">Interval? Biryani delivers before your next scene.</div>
+                  <div class="sub">The QR turns your phone into the checkout — the TV stays untouched.</div>
+                  <div class="qr"><div class="code"></div><div class="cta">Scan from the couch<br>30% off tonight</div></div>
+                  <button class="mock-cta ghost">Press ▶ to resume</button>
+                </div>
+                <div class="scrub"><div class="bar"><i></i></div><div class="tm"><span>23:41</span><span>56:12</span></div></div>
+              </div>
+            </div>
+
+            <div class="mock" id="mock-t2">
+              <div class="postplay">
+                <div class="credits">Directed by<br>Anurag Kashyap<br><br>Cinematography<br>S. Ravi Varman<br><br>Music<br>Amit Trivedi</div>
+                <div class="np-card">
+                  <div class="lbl">Next episode</div>
+                  <div class="ep">E5 · “Raat Baaki”</div>
+                  <div class="btns"><div class="b now"><span class="ring"></span> Playing in <span class="cd">12</span>s</div><div class="b cred">Watch credits</div></div>
+                </div>
+                <div class="bridge-ad adzone" data-zone="T2 · EPISODE STILL PLAYS ON TIME">
+                  <div class="ad-tag"><span>Sponsored bridge</span><span>skippable</span></div>
+                  <div class="brand-swiggy">Swiggy</div>
+                  <div class="hook">Family binge night? Dinner for four, delivered by E6.</div>
+                  <div class="promo">BINGE40 · 40% OFF</div>
+                  <div class="fine">Your episode starts on schedule — this card never delays playback.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mock" id="mock-t3">
+              <div class="still">
+                <div class="still-box">
+                  <div class="q">Are you still watching “Mirzapur”?</div>
+                  <div class="s">Netflix paused this itself — no data wasted, no story missed.</div>
+                  <div class="btns"><div class="b yes">Continue watching</div><div class="b no">Exit</div></div>
+                </div>
+                <div class="still-ad adzone" data-zone="T3 · PLAYBACK ALREADY STOPPED BY NETFLIX">
+                  <div class="cup">☕</div>
+                  <div class="t">Fell asleep mid-binge? <small>Tomorrow’s first Starbucks coffee is 50% off · Ad</small></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mock" id="mock-t4">
+              <div class="tv-home">
+                <div class="tv-rail">
+                  <div class="n">N</div>
+                  <div class="ic on"></div><div class="ic"></div><div class="ic"></div><div class="ic"></div>
+                </div>
+                <div class="tv-main">
+                  <div class="tv-bill">
+                    <div class="editorial-chip">HERO — 100% EDITORIAL, NEVER SOLD</div>
+                    <div class="meta">
+                      <div class="ttl">HEERAMANDI</div>
+                      <div class="tags">Lavish · Period Drama · Emotional</div>
+                    </div>
+                  </div>
+                  <div class="tv-row">
+                    <div class="rt">Continue Watching</div>
+                    <div class="m-tiles">
+                      <div class="tile wide t1 focus"><span>Sacred Games</span><div class="cw-bar"><i style="width:62%"></i></div></div>
+                      <div class="tile wide t2"><span>Kota Factory</span><div class="cw-bar"><i style="width:31%"></i></div></div>
+                      <div class="tile wide t4"><span>The Railway Men</span><div class="cw-bar"><i style="width:84%"></i></div></div>
+                      <div class="tile wide t5"><span>Wednesday</span></div>
+                    </div>
+                  </div>
+                  <div class="tv-row adzone" data-zone="T4 · ROW 3+, REAL TITLES ONLY">
+                    <div class="rt">Friday Night Thrillers <span class="spons-chip">Presented by CRED</span></div>
+                    <div class="m-tiles">
+                      <div class="tile wide t2"><span>Andhadhun</span></div>
+                      <div class="tile wide t1"><span>Monica, O My Darling</span></div>
+                      <div class="tile wide t7"><span>Drishyam</span></div>
+                      <div class="tile wide t5"><span>Haseen Dillruba</span></div>
+                    </div>
+                  </div>
+                  <div class="tv-row">
+                    <div class="rt">Top 10 in India Today</div>
+                    <div class="m-tiles">
+                      <div class="tile wide t6"><span>Squid Game</span></div>
+                      <div class="tile wide t7"><span>Delhi Crime</span></div>
+                      <div class="tile wide t8"><span>Guns &amp; Gulaabs</span></div>
+                      <div class="tile wide t3"><span>Jamtara</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mock" id="mock-t5">
+              <div class="ambient">
+                <div class="amb-art"></div>
+                <div class="amb-clock">9:41</div>
+                <div class="amb-title">
+                  <div class="t">HEERAMANDI</div>
+                  <div class="s">Tonight on Netflix · Ambient gallery</div>
+                </div>
+                <div class="amb-spon adzone" data-zone="T5 · IDLE SCREEN ONLY, NOBODY IS WATCHING YET">
+                  <span class="lbl">Gallery presented by</span>
+                  <span class="brand-tanishq">TANISHQ</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="tv-stand"></div>
+      </div>
+
+      <!-- ════════ DESKTOP ════════ -->
+      <div class="frame-holder" id="frame-desktop">
+        <div class="browser">
+          <div class="browser-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <div class="urlbox">netflix.com/watch/81157374</div>
+          </div>
+          <div class="desk-screen">
+
+            <div class="mock" id="mock-d1">
+              <div class="player">
+                <div class="vtitle">Mirzapur · S3 E4<small>“Bhaukaal”</small></div>
+                <div class="pause-glyph"></div>
+                <div class="pause-ad adzone" id="pauseAdD" data-zone="D1 · APPEARS 3S AFTER PAUSE">
+                  <div class="ad-tag"><span>Ad</span><span>disappears on play</span></div>
+                  <div class="brand-zomato">zomato</div>
+                  <div class="hook">Interval? Biryani delivers before your next scene.</div>
+                  <div class="sub">On desktop this card is a real link — one click to a filled cart.</div>
+                  <button class="mock-cta">Order in 1 click · 30% off →</button>
+                  <button class="mock-cta ghost">Resume watching ▶</button>
+                </div>
+                <div class="scrub"><div class="bar"><i></i></div><div class="tm"><span>23:41</span><span>56:12</span></div></div>
+              </div>
+            </div>
+
+            <div class="mock" id="mock-d2">
+              <div class="postplay">
+                <div class="credits">Directed by<br>Anurag Kashyap<br><br>Cinematography<br>S. Ravi Varman<br><br>Music<br>Amit Trivedi</div>
+                <div class="np-card">
+                  <div class="lbl">Next episode</div>
+                  <div class="ep">E5 · “Raat Baaki”</div>
+                  <div class="btns"><div class="b now"><span class="ring"></span> Playing in <span class="cd">12</span>s</div><div class="b cred">Watch credits</div></div>
+                </div>
+                <div class="bridge-ad adzone" data-zone="D2 · EPISODE STILL PLAYS ON TIME">
+                  <div class="ad-tag"><span>Sponsored bridge</span><span>skippable</span></div>
+                  <div class="brand-swiggy">Swiggy</div>
+                  <div class="hook">Episode 5 already? Dinner’s on us tonight.</div>
+                  <div class="promo" title="Click to copy">FLAT40 · CLICK TO COPY</div>
+                  <div class="fine">Desktop twist: the code copies to clipboard — attribution Netflix can measure.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mock" id="mock-d3">
+              <div class="dk-nav">
+                <div class="m-n">N</div>
+                <span class="lnk">Home</span><span class="lnk dim">TV Shows</span><span class="lnk dim">Movies</span><span class="lnk dim">My List</span>
+                <div class="right"><span class="lnk dim">🔍</span><div class="m-ava"></div></div>
+              </div>
+              <div class="m-scroll">
+                <div class="dk-bill">
+                  <div class="editorial-chip">HERO — 100% EDITORIAL, NEVER SOLD</div>
+                  <div class="meta">
+                    <div class="ttl">HEERAMANDI</div>
+                    <div class="desc">In the lanes of Lahore’s pleasure district, power is a performance.</div>
+                    <div class="btns"><div class="b play">▶ Play</div><div class="b info">ⓘ More Info</div></div>
+                  </div>
+                </div>
+                <div class="dk-row">
+                  <div class="rt">Continue Watching</div>
+                  <div class="m-tiles">
+                    <div class="tile t1"><span>Sacred Games</span><div class="cw-bar"><i style="width:62%"></i></div></div>
+                    <div class="tile t2"><span>Kota Factory</span><div class="cw-bar"><i style="width:31%"></i></div></div>
+                    <div class="tile t4"><span>The Railway Men</span><div class="cw-bar"><i style="width:84%"></i></div></div>
+                    <div class="tile t5"><span>Wednesday</span></div>
+                    <div class="tile t6"><span>Squid Game</span></div>
+                  </div>
+                </div>
+                <div class="dk-row adzone" data-zone="D3 · ROW 3+, HOVER PLAYS TITLE PREVIEWS">
+                  <div class="rt">Friday Night Thrillers <span class="spons-chip">Presented by CRED</span></div>
+                  <div class="m-tiles">
+                    <div class="tile t2"><span>Andhadhun</span></div>
+                    <div class="tile t1"><span>Monica, O My Darling</span></div>
+                    <div class="tile t7"><span>Drishyam</span></div>
+                    <div class="tile t5"><span>Haseen Dillruba</span></div>
+                    <div class="tile t8"><span>Kohrra</span></div>
+                  </div>
+                </div>
+                <div class="dk-row">
+                  <div class="rt">Critically Acclaimed Films</div>
+                  <div class="m-tiles">
+                    <div class="tile t4"><span>12th Fail</span></div>
+                    <div class="tile t3"><span>Laapataa Ladies</span></div>
+                    <div class="tile t8"><span>Kathal</span></div>
+                    <div class="tile t6"><span>Serious Men</span></div>
+                    <div class="tile t7"><span>Delhi Crime</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mock" id="mock-d4">
+              <div class="searchbar desk"><span class="mag"></span> thriller</div>
+              <div class="res-head">Top results for “thriller”</div>
+              <div class="m-scroll">
+                <div class="res-grid cols5">
+                  <div class="tile t1"><span>Sacred Games</span></div>
+                  <div class="tile t2"><span>Andhadhun</span></div>
+                  <div class="tile t7"><span>Delhi Crime</span></div>
+                  <div class="tile t5"><span>Haseen Dillruba</span></div>
+                  <div class="tile t3"><span>Jamtara</span></div>
+                  <div class="tile t8"><span>Guns &amp; Gulaabs</span></div>
+                  <div class="tile t6"><span>Squid Game</span></div>
+                  <div class="tile t4"><span>Kohrra</span></div>
+                  <div class="tile t1"><span>Khakee</span></div>
+                  <div class="tile vbrand adzone zlow" data-zone="D4 · LAST TILE ONLY">
+                    <span>Class of ’84<br><span class="spons-chip" style="margin-top:4px;display:inline-block">Sponsored · boAt</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       <div class="device-note" id="deviceNote"></div>
     </div>
 
@@ -501,62 +841,125 @@
   </div>
 
   <footer>
-    <b>Concept mock — not affiliated with Netflix.</b> Brand names (Zomato, Swiggy, Jio, CRED, boAt) are illustrative launch-partner examples. Interface is a stylized recreation for pitch purposes; sizing and revenue figures in the companion strategy doc are directional. Netflix India context: no ad tier as of July 2026; global ad tier at 250M+ monthly viewers.
+    <b>Concept mock — not affiliated with Netflix.</b> Brand names (Zomato, Swiggy, Jio, CRED, boAt, Starbucks, Tanishq) are illustrative launch-partner examples. Interfaces are stylized recreations for pitch purposes; sizing and revenue figures in the companion strategy doc are directional. Netflix India context: no ad tier as of July 2026; global ad tier at 250M+ monthly viewers.
   </footer>
 </div>
 
 <script>
-  const PLACEMENTS = [
-    { id: "p1", num: "P1", name: "Pause Spot", surface: "PLAYBACK · PAUSED", landscape: true,
-      moment: "User-initiated break",
-      why: "The user pressed pause — the story is already stopped, by them. A brand card fades in beside the untouched frame after a 3-second grace period (accidental pauses never see it) and vanishes the instant anything is touched. Hulu proved this format has top-tier brand recall; Netflix runs it in ad-tier markets already.",
-      facts: [["Interrupts playback","Never"],["Est. impressions/mo","~900M"],["Blended CPM","₹180"],["Natural fit","Food delivery · QSR · beverages"]] },
-    { id: "p2", num: "P2", name: "Binge Bridge", surface: "BETWEEN EPISODES", landscape: true,
-      moment: "The auto-play countdown",
-      why: "The 5–15s post-play countdown is streaming's most predictable attention window — and today it's blank space. A sponsor sits beside the countdown; the next episode still starts exactly on schedule and “Play now” still skips instantly. Session-aware copy (“Episode 5 already?”) makes it feel like a wink, not an ad. Capped at 1 per 3 episodes.",
-      facts: [["Delays next episode","0 seconds"],["Est. impressions/mo","~650M"],["Blended CPM","₹220"],["Natural fit","Food · commerce · late-night offers"]] },
-    { id: "p3", num: "P3", name: "Sponsored Collection", surface: "HOME · ROW 3+", landscape: false,
-      moment: "Active browsing",
-      why: "Not a banner — a curated row of real Netflix titles that a brand presents, visually identical to editorial rows and always below the fold. The hero and top rows stay 100% editorial (marked in green in the mock). The brand buys association with a mood; Netflix keeps full editorial control of which titles appear. Closer to a partnership than an ad.",
-      facts: [["Hero touched","Never"],["Model","Weekly row sponsorship"],["Deal size","₹8–12 Cr/mo total"],["Natural fit","Fintech · premium D2C · auto"]] },
-    { id: "p4", num: "P4", name: "Search Spotlight", surface: "SEARCH RESULTS", landscape: false,
-      moment: "Highest intent in the app",
-      why: "One clearly-labeled sponsored tile at the end of the results grid — never above organic results. The strongest version promotes content a brand is attached to (a tie-in, a product-placement title), so even the ad is still a show. One per query, frequency-capped.",
-      facts: [["Position","Last tile only"],["Est. impressions/mo","~120M"],["Blended CPM","₹250"],["Natural fit","Co-marketing & title tie-ins"]] },
-    { id: "p5", num: "P5", name: "Download Break", surface: "MOBILE · DOWNLOADS", landscape: false,
-      moment: "Watching a progress bar",
-      why: "India is Netflix's most download-heavy market — commutes, trains, data-conscious users. While a download runs, the user is literally staring at a progress bar. A single card below the queue fills that dead time; telecom and data offers (“this download's on us”) are almost a public service here. Shows only while a download is active.",
-      facts: [["Shows when idle","No — active downloads only"],["Est. impressions/mo","~200M"],["Blended CPM","₹120"],["Natural fit","Telecom · fintech · UPI apps"]] },
-    { id: "p6", num: "P6", name: "New & Hot Preview", surface: "NEW & HOT FEED", landscape: false,
-      moment: "Users came here for promos",
-      why: "New & Hot is already a trailer feed — promotional by design. One film-grade branded spot per ~8 organic cards, sound off by default, skipped with a flick like everything else. The only surface where video advertising is native to what users came to do. Quality bar: theatrical-grade creative only.",
-      facts: [["Frequency","1 per ~8 cards"],["Est. impressions/mo","~180M"],["Blended CPM","₹300"],["Natural fit","Entertainment tie-ins · lifestyle"]] },
-  ];
+  const DEVICES = {
+    mobile: {
+      note: { p1: "Phone rotates — this moment happens in fullscreen playback",
+              p2: "Phone rotates — this moment happens in fullscreen playback",
+              default: "Portrait — browse & utility surfaces" },
+      placements: [
+        { id: "p1", num: "P1", name: "Pause Spot", surface: "PLAYBACK · PAUSED", landscape: true,
+          moment: "User-initiated break",
+          why: "The user pressed pause — the story is already stopped, by them. A brand card fades in beside the untouched frame after a 3-second grace period (accidental pauses never see it) and vanishes the instant anything is touched. Hulu proved this format has top-tier brand recall; Netflix runs it in ad-tier markets already.",
+          facts: [["Interrupts playback","Never"],["Est. impressions/mo","~550M"],["Blended CPM","₹180"],["Natural fit","Food delivery · QSR · beverages"]] },
+        { id: "p2", num: "P2", name: "Binge Bridge", surface: "BETWEEN EPISODES", landscape: true,
+          moment: "The auto-play countdown",
+          why: "The 5–15s post-play countdown is streaming's most predictable attention window — and today it's blank space. A sponsor sits beside the countdown; the next episode still starts exactly on schedule and “Play now” still skips instantly. Session-aware copy (“Episode 5 already?”) makes it feel like a wink, not an ad. Capped at 1 per 3 episodes.",
+          facts: [["Delays next episode","0 seconds"],["Est. impressions/mo","~400M"],["Blended CPM","₹220"],["Natural fit","Food · commerce · late-night offers"]] },
+        { id: "p3", num: "P3", name: "Sponsored Collection", surface: "HOME · ROW 3+", landscape: false,
+          moment: "Active browsing",
+          why: "Not a banner — a curated row of real Netflix titles that a brand presents, visually identical to editorial rows and always below the fold. The hero and top rows stay 100% editorial (marked in green in the mock). The brand buys association with a mood; Netflix keeps full editorial control of which titles appear. Closer to a partnership than an ad.",
+          facts: [["Hero touched","Never"],["Model","Weekly row sponsorship"],["Deal size","₹8–12 Cr/mo total"],["Natural fit","Fintech · premium D2C · auto"]] },
+        { id: "p4", num: "P4", name: "Search Spotlight", surface: "SEARCH RESULTS", landscape: false,
+          moment: "Highest intent in the app",
+          why: "One clearly-labeled sponsored tile at the end of the results grid — never above organic results. The strongest version promotes content a brand is attached to (a tie-in, a product-placement title), so even the ad is still a show. One per query, frequency-capped.",
+          facts: [["Position","Last tile only"],["Est. impressions/mo","~90M"],["Blended CPM","₹250"],["Natural fit","Co-marketing & title tie-ins"]] },
+        { id: "p5", num: "P5", name: "Download Break", surface: "DOWNLOADS", landscape: false,
+          moment: "Watching a progress bar",
+          why: "India is Netflix's most download-heavy market — commutes, trains, data-conscious users. While a download runs, the user is literally staring at a progress bar. A single card below the queue fills that dead time; telecom and data offers (“this download's on us”) are almost a public service here. Shows only while a download is active. Mobile-only — this surface doesn't exist anywhere else.",
+          facts: [["Shows when idle","No — active downloads only"],["Est. impressions/mo","~200M"],["Blended CPM","₹120"],["Natural fit","Telecom · fintech · UPI apps"]] },
+        { id: "p6", num: "P6", name: "New & Hot Preview", surface: "NEW & HOT FEED", landscape: false,
+          moment: "Users came here for promos",
+          why: "New & Hot is already a trailer feed — promotional by design. One film-grade branded spot per ~8 organic cards, sound off by default, skipped with a flick like everything else. The only surface where video advertising is native to what users came to do. Quality bar: theatrical-grade creative only.",
+          facts: [["Frequency","1 per ~8 cards"],["Est. impressions/mo","~180M"],["Blended CPM","₹300"],["Natural fit","Entertainment tie-ins · lifestyle"]] },
+      ]
+    },
+    tv: {
+      note: { default: "10-foot UI — the QR code turns the viewer's phone into the click, so the TV never becomes a checkout" },
+      placements: [
+        { id: "t1", num: "T1", name: "Pause Spot", surface: "PLAYBACK · PAUSED",
+          moment: "The living-room break",
+          why: "On TV a pause usually means someone physically left the couch — chai, doorbell, kids. The brand card sits beside the untouched 4K frame and the QR code moves the transaction to the phone, so the TV never becomes a checkout. Biggest screen, co-viewing audience (2.5+ viewers per household screen), premium CPM. Same 3-second grace and instant dismiss-on-resume as mobile.",
+          facts: [["Interrupts playback","Never"],["Est. impressions/mo","~280M"],["Blended CPM","₹350 (co-viewing)"],["Natural fit","Food delivery · auto · consumer durables"]] },
+        { id: "t2", num: "T2", name: "Binge Bridge", surface: "BETWEEN EPISODES",
+          moment: "Family binge countdown",
+          why: "TV binge sessions are longer and shared — the between-episode window is prime family-decision time (“should we order dinner?”). The sponsor card speaks to the room, not a person: dinner-for-four offers, weekend plans. Episode still auto-plays exactly on schedule; capped at 1 per 3 episodes.",
+          facts: [["Delays next episode","0 seconds"],["Est. impressions/mo","~220M"],["Blended CPM","₹380"],["Natural fit","Food · family commerce · travel"]] },
+        { id: "t3", num: "T3", name: "“Still Watching?” Spot", surface: "IDLE INTERRUPT",
+          moment: "Netflix already stopped the show",
+          why: "The one moment where playback is halted by Netflix itself — the “Are you still watching?” prompt after long inactivity. The viewer is either asleep or away; nobody's story is being interrupted because Netflix already interrupted it for their own data-saving reasons. A small companion card here (“fell asleep mid-binge? tomorrow's coffee is on us”) is witty, contextual, and literally cannot harm the viewing experience.",
+          facts: [["Playback state","Already stopped by Netflix"],["Est. impressions/mo","~45M"],["Blended CPM","₹300"],["Natural fit","Coffee · breakfast · morning brands"]] },
+        { id: "t4", num: "T4", name: "Sponsored Collection", surface: "TV HOME · ROW 3+",
+          moment: "Remote-in-hand browsing",
+          why: "Same brand-presented row of real titles as mobile, adapted to the 10-foot UI: landscape tiles, visible focus ring, D-pad navigation. TV browse sessions are the longest and most deliberate (“what should we all watch?”), so a well-curated sponsored mood row genuinely helps the room decide. Hero and top rows stay untouchable.",
+          facts: [["Hero touched","Never"],["Model","Weekly row sponsorship"],["Deal premium","1.5× mobile (co-viewing)"],["Natural fit","Fintech · auto · premium D2C"]] },
+        { id: "t5", num: "T5", name: "Ambient Gallery", surface: "IDLE SCREENSAVER",
+          moment: "The TV is idle — nobody is watching anything",
+          why: "TV-only and completely unused today: when Netflix sits idle on the menu, it drifts into screensaver-style title art. A brand presents that gallery — one elegant chip on beautiful, full-bleed artwork, like sponsoring an exhibition. Zero viewing interrupted because there is no viewing. Premium brands buy exactly this kind of ambient association (airport lounges, art galleries) at high prices.",
+          facts: [["Viewing interrupted","None exists — screen is idle"],["Model","Monthly gallery sponsorship"],["Deal size","₹2–4 Cr/mo"],["Natural fit","Jewelry · watches · auto · luxury"]] },
+      ]
+    },
+    desktop: {
+      note: { default: "The only Netflix screen with a cursor — every card here is one real click from a landing page or a filled cart" },
+      placements: [
+        { id: "d1", num: "D1", name: "Pause Spot", surface: "WEB PLAYER · PAUSED",
+          moment: "Pause, with a cursor present",
+          why: "Desktop is the only screen where the ad unit is genuinely clickable — no QR hop, no app switch. The pause card becomes a one-click action: “order in 1 click”, cart pre-filled. Any click on the player, keypress, or scrub dismisses it instantly. Lower reach than mobile/TV in India, but the only placement with direct, measurable click-through — the performance-marketing story in the deck.",
+          facts: [["Interrupts playback","Never"],["Est. impressions/mo","~70M"],["Blended CPM","₹200 + CPC upside"],["Natural fit","D2C · quick commerce · SaaS"]] },
+        { id: "d2", num: "D2", name: "Binge Bridge", surface: "BETWEEN EPISODES",
+          moment: "Countdown, clipboard within reach",
+          why: "Same post-play window as other screens with a desktop-native twist: the promo code is click-to-copy. That single interaction gives Netflix and the brand clean, deterministic attribution — impression → copy → redemption — which is exactly the conversion proof this whole pitch needs for its first case study.",
+          facts: [["Delays next episode","0 seconds"],["Est. impressions/mo","~55M"],["Blended CPM","₹240"],["Why it matters","Cleanest attribution loop of all 15"]] },
+        { id: "d3", num: "D3", name: "Sponsored Collection", surface: "BROWSE · ROW 3+",
+          moment: "Lean-forward browsing",
+          why: "The web browse page keeps the same rule set — brand-presented row of real titles, row 3+, hero untouched — and adds the desktop superpower: hover. Hovering any tile in the sponsored row plays that title's preview, exactly like editorial rows, so the sponsored row is functionally identical to the rest of the page. The brand buys the label, never the behavior.",
+          facts: [["Hero touched","Never"],["Model","Weekly row sponsorship"],["Bundled with","Mobile + TV row for one price"],["Natural fit","Fintech · premium D2C"]] },
+        { id: "d4", num: "D4", name: "Search Spotlight", surface: "SEARCH RESULTS",
+          moment: "Typed intent",
+          why: "Desktop search is typed, specific, and wide — a five-column grid gives the sponsored tile more company, and it still sits strictly last. Clicking it opens the title page (for tie-ins) or a brand page in a new tab — never navigating the user away from Netflix without an explicit click.",
+          facts: [["Position","Last tile only"],["Est. impressions/mo","~25M"],["Blended CPM","₹280"],["Natural fit","Co-marketing & title tie-ins"]] },
+      ]
+    }
+  };
 
   const phone = document.getElementById("phone");
-  const clip = document.getElementById("screenClip");
+  const area = document.getElementById("deviceArea");
   const selector = document.getElementById("selector");
   const detail = document.getElementById("detail");
   const note = document.getElementById("deviceNote");
   const zoneToggle = document.getElementById("zoneToggle");
-  let pauseTimer = null, cdTimer = null;
+  let currentDev = "mobile", pauseTimer = null, cdTimer = null;
 
-  PLACEMENTS.forEach((p, i) => {
-    const b = document.createElement("button");
-    b.className = "sel-btn"; b.dataset.id = p.id;
-    b.innerHTML = `<span class="pnum">${p.num}</span><span>${p.name}</span><span class="surf">${p.surface}</span>`;
-    b.addEventListener("click", () => activate(p.id));
-    selector.appendChild(b);
-  });
+  function buildSelector(dev) {
+    selector.innerHTML = "";
+    DEVICES[dev].placements.forEach(p => {
+      const b = document.createElement("button");
+      b.className = "sel-btn"; b.dataset.id = p.id;
+      b.innerHTML = `<span class="pnum">${p.num}</span><span>${p.name}</span><span class="surf">${p.surface}</span>`;
+      b.addEventListener("click", () => activate(p.id));
+      selector.appendChild(b);
+    });
+  }
+
+  function activateDevice(dev) {
+    currentDev = dev;
+    document.querySelectorAll(".dev-btn").forEach(b => b.classList.toggle("active", b.dataset.dev === dev));
+    document.querySelectorAll(".frame-holder").forEach(f => f.classList.toggle("on", f.id === "frame-" + dev));
+    buildSelector(dev);
+    activate(DEVICES[dev].placements[0].id);
+  }
 
   function activate(id) {
-    const p = PLACEMENTS.find(x => x.id === id);
-    document.querySelectorAll(".sel-btn").forEach(b => b.classList.toggle("active", b.dataset.id === id));
-    document.querySelectorAll(".mock").forEach(m => m.classList.toggle("on", m.id === "mock-" + id));
-    phone.classList.toggle("landscape", p.landscape);
-    note.textContent = p.landscape
-      ? "Phone rotates — this moment happens in fullscreen playback"
-      : "Portrait — browse & utility surfaces";
+    const dev = DEVICES[currentDev];
+    const p = dev.placements.find(x => x.id === id);
+    selector.querySelectorAll(".sel-btn").forEach(b => b.classList.toggle("active", b.dataset.id === id));
+    area.querySelectorAll(".mock").forEach(m => m.classList.toggle("on", m.id === "mock-" + id));
+    if (currentDev === "mobile") phone.classList.toggle("landscape", !!p.landscape);
+    note.textContent = dev.note[id] || dev.note.default;
 
     detail.innerHTML = `
       <div class="moment">${p.num} · ${p.moment}</div>
@@ -566,24 +969,28 @@
         `<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}</div>`;
 
     clearTimeout(pauseTimer); clearInterval(cdTimer);
-    if (id === "p1") {
-      const ad = document.getElementById("pauseAd");
+    const pauseAd = { p1: "pauseAdM", t1: "pauseAdT", d1: "pauseAdD" }[id];
+    if (pauseAd) {
+      const ad = document.getElementById(pauseAd);
       ad.classList.remove("in");
       pauseTimer = setTimeout(() => ad.classList.add("in"), 1400);
     }
-    if (id === "p2") {
-      let n = 12; const el = document.getElementById("cd");
-      el.textContent = n;
-      cdTimer = setInterval(() => { n = n > 1 ? n - 1 : 12; el.textContent = n; }, 1000);
+    const cd = document.querySelector(`#mock-${id} .cd`);
+    if (cd) {
+      let n = 12; cd.textContent = n;
+      cdTimer = setInterval(() => { n = n > 1 ? n - 1 : 12; cd.textContent = n; }, 1000);
     }
   }
 
+  document.querySelectorAll(".dev-btn").forEach(b =>
+    b.addEventListener("click", () => activateDevice(b.dataset.dev)));
+
   zoneToggle.addEventListener("click", () => {
     const on = zoneToggle.getAttribute("aria-pressed") !== "true";
-    zoneToggle.setAttribute("aria-pressed", on);
-    clip.classList.toggle("zones-on", on);
+    zoneToggle.setAttribute("aria-pressed", String(on));
+    area.classList.toggle("zones-on", on);
   });
-  clip.classList.add("zones-on");
+  area.classList.add("zones-on");
 
-  activate("p1");
+  activateDevice("mobile");
 </script>

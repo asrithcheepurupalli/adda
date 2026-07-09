@@ -1,6 +1,8 @@
 # Netflix India — Non-Intrusive Ad Placement Pitch
 
-*Prepared July 2026 · Companion mock: `netflix-mock.html`*
+*Prepared July 2026 · Companion mock: `netflix-mock.html` (interactive — Mobile / TV / Desktop)*
+
+**15 placements across 3 screens: Mobile P1–P6 · TV T1–T5 · Desktop D1–D4.** Each screen gets its own playbook because the attention is different: mobile is solo and download-heavy, TV is co-viewed and premium, desktop is the only screen with a cursor — one real click from checkout.
 
 ---
 
@@ -18,7 +20,7 @@
 2. **Never touch the hero.** The home-screen billboard and top rows stay 100% editorial. Discovery trust is the product.
 3. **Every placement earns its slot.** Each ad must occupy a moment where the user is *already waiting, pausing, or browsing* — attention that exists anyway, currently monetized by nobody.
 
-## 3. The six placements (shown in the mock)
+## 3. Mobile placements P1–P6 (~70% of India viewing)
 
 ### P1 · Pause Spot
 When the user pauses, the screen already dims and idles. After a 3-second delay (so accidental pauses never see it), a side-panel brand card fades in next to the paused frame — artwork untouched, never covering subtitles or the scrubber. Any interaction (resume, seek, remote wake) dismisses it instantly.
@@ -52,7 +54,50 @@ The New & Hot tab is already a trailer feed — promotional by nature. One brand
 - **Moment:** users came here *to see promos*. The only surface where video ads feel native.
 - **Format:** vertical video card, sound-off autoplay, skip by scroll.
 
-## 4. Why this is a win-win-win
+## 4. TV placements T1–T5 (highest-CPM screen)
+
+TV is co-viewed — 2.5+ people per household screen — and the transaction always moves to the phone via QR, so the TV never becomes a checkout.
+
+### T1 · Pause Spot (living-room edition)
+A TV pause usually means someone physically left the couch (chai, doorbell, kids). Brand card beside the untouched 4K frame, QR moves the action to the phone. Same 3s grace + instant dismiss-on-resume.
+- ~280M impressions/mo · ₹350 CPM (co-viewing premium) · food delivery, auto, consumer durables.
+
+### T2 · Binge Bridge (family edition)
+Between-episode countdown, but the copy speaks to the room: "Family binge night? Dinner for four, delivered by E6." Episode still auto-plays exactly on schedule.
+- ~220M impressions/mo · ₹380 CPM · food, family commerce, travel.
+
+### T3 · "Still Watching?" Spot — TV-unique
+The one moment where **Netflix itself has already stopped playback**: the "Are you still watching?" prompt. The viewer is asleep or away — an ad here literally cannot interrupt anyone. A witty companion card ("Fell asleep mid-binge? Tomorrow's coffee is 50% off") is contextual and harmless by construction.
+- ~45M impressions/mo · ₹300 CPM · coffee, breakfast, morning brands.
+
+### T4 · Sponsored Collection (10-foot UI)
+Same brand-presented row of real titles, adapted for D-pad navigation with landscape tiles and focus ring. TV browse is the longest, most deliberate session type ("what should we all watch?") — good curation genuinely helps the room decide.
+- Weekly sponsorship · ~1.5× mobile pricing for co-viewing.
+
+### T5 · Ambient Gallery — TV-unique
+When Netflix sits idle on a TV it drifts into screensaver-style title art. A brand presents that gallery — one elegant chip on full-bleed artwork, like sponsoring an exhibition. **Zero viewing is interrupted because no viewing exists.** Premium brands pay for exactly this ambient association (lounges, galleries).
+- Monthly gallery sponsorship · ₹2–4 Cr/mo · jewelry, watches, auto, luxury.
+
+## 5. Desktop placements D1–D4 (the conversion screen)
+
+Smallest reach in India, but the only screen with a cursor — the performance-marketing proof point for the whole pitch.
+
+### D1 · Pause Spot (clickable)
+No QR hop: the pause card is a real link — "Order in 1 click", cart pre-filled. Any player click/keypress dismisses it. The only placement with direct, measurable CTR.
+- ~70M impressions/mo · ₹200 CPM + CPC upside · D2C, quick commerce, SaaS.
+
+### D2 · Binge Bridge (click-to-copy)
+The promo code copies to clipboard on click — giving Netflix and the brand a deterministic attribution loop (impression → copy → redemption). **This is the first case study for the conversions story.**
+- ~55M impressions/mo · ₹240 CPM.
+
+### D3 · Sponsored Collection (hover previews)
+Same row rules (row 3+, real titles, hero untouched) plus the desktop superpower: hovering sponsored-row tiles plays previews exactly like editorial rows. Sold bundled with the mobile + TV row as one cross-device sponsorship.
+
+### D4 · Search Spotlight (typed intent)
+Five-column grid, sponsored tile strictly last, clearly labeled. Clicks open the title page or a brand page in a new tab — never navigating the user away without an explicit click.
+- ~25M impressions/mo · ₹280 CPM.
+
+## 6. Why this is a win-win-win
 
 | | What they get |
 |---|---|
@@ -60,22 +105,24 @@ The New & Hot tab is already a trailer feed — promotional by nature. One brand
 | **Brands** | Netflix-grade premium context (4K, big-screen, affluent + youth mix) unavailable anywhere in Indian streaming today; contextual moments (genre, time-of-day, binge-depth) instead of spray-and-pray CPMs. |
 | **Users** | Content never stops. Nothing above the fold changes. Potentially a cheaper plan. The "ads" they do see are curation, offers, and trailers — the tolerable kind. |
 
-## 5. Sizing the opportunity (conservative, illustrative)
+## 7. Sizing the opportunity (conservative, illustrative)
 
-Assumptions: ~12–15M Netflix India subs, ~1.5 sessions/day, ~2.4 pauses + 1.8 episode-transitions per session.
+Assumptions: ~12–15M Netflix India subs, ~1.5 sessions/day, ~2.4 pauses + 1.8 episode-transitions per session, device split roughly 70% mobile / 22% TV / 8% desktop.
 
-| Placement | Est. monthly impressions | Blended CPM (₹) | Monthly revenue potential |
-|---|---|---|---|
-| Pause Spot | ~900M | 180 | ₹16 Cr |
-| Binge Bridge | ~650M | 220 | ₹14 Cr |
-| Sponsored Collection | (sponsorship, not CPM) | — | ₹8–12 Cr |
-| Search Spotlight | ~120M | 250 | ₹3 Cr |
-| Download Break | ~200M | 120 | ₹2.4 Cr |
-| New & Hot Preview | ~180M | 300 | ₹5.4 Cr |
+| Placement | Screen | Est. monthly impressions | Blended CPM (₹) | Monthly revenue potential |
+|---|---|---|---|---|
+| Pause Spot | Mobile ~550M · TV ~280M · Desktop ~70M | ~900M | 180–350 | ₹22 Cr |
+| Binge Bridge | Mobile ~400M · TV ~220M · Desktop ~55M | ~675M | 220–380 | ₹18 Cr |
+| Sponsored Collection | Cross-device bundle (sponsorship) | — | — | ₹10–14 Cr |
+| Search Spotlight | Mobile ~90M · Desktop ~25M | ~115M | 250–280 | ₹3 Cr |
+| Download Break | Mobile only | ~200M | 120 | ₹2.4 Cr |
+| New & Hot Preview | Mobile | ~180M | 300 | ₹5.4 Cr |
+| "Still Watching?" Spot | TV only | ~45M | 300 | ₹1.4 Cr |
+| Ambient Gallery | TV only (sponsorship) | — | — | ₹2–4 Cr |
 
-**Indicative total: ₹45–55 Cr/month (~$65–80M/year)** — before any ad-supported tier, with zero seconds of playback interrupted. Numbers are directional; a real pitch would rebuild them from Netflix's disclosed India engagement data.
+**Indicative total: ₹60–75 Cr/month (~$85–105M/year)** — before any ad-supported tier, with zero seconds of playback interrupted. Numbers are directional; a real pitch would rebuild them from Netflix's disclosed India engagement data.
 
-## 6. Proposed next steps
+## 8. Proposed next steps
 
 1. Validate the mock with 20–30 Netflix India users (does anything feel intrusive?).
 2. Rebuild the sizing model with real benchmarks (BARC/Comscore India OTT data, Hotstar CPM cards).
